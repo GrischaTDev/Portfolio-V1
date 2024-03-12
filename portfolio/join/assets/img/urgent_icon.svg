@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="40px" height="40px" viewBox="0 0 41 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <circle id="Ellipse-4" serif:id="Ellipse 4" cx="20.5" cy="20" r="20" style="fill:rgb(255,61,0);"/>
+    <g id="Prio-alta.svg" serif:id="Prio alta.svg" transform="matrix(1.25,0,0,1.25,20.5,19)">
+        <g transform="matrix(1,0,0,1,-12,-9)">
+            <g id="Prio-alta" serif:id="Prio alta">
+                <clipPath id="_clip1">
+                    <rect x="0.872" y="0.698" width="22.791" height="16.744"/>
+                </clipPath>
+                <g clip-path="url(#_clip1)">
+                    <g id="Capa-2" serif:id="Capa 2">
+                        <g id="Capa-1" serif:id="Capa 1">
+                            <path id="Vector" d="M22.414,17.442C22.147,17.443 21.886,17.357 21.671,17.196L12.268,10.176L2.864,17.196C2.732,17.295 2.582,17.366 2.423,17.406C2.264,17.446 2.098,17.454 1.936,17.43C1.773,17.405 1.617,17.348 1.477,17.263C1.336,17.177 1.213,17.064 1.116,16.931C1.018,16.797 0.948,16.645 0.908,16.484C0.868,16.323 0.861,16.155 0.885,15.991C0.934,15.659 1.112,15.361 1.378,15.161L11.525,7.579C11.74,7.418 12,7.331 12.268,7.331C12.535,7.331 12.796,7.418 13.011,7.579L23.157,15.161C23.369,15.319 23.526,15.541 23.606,15.795C23.686,16.049 23.685,16.321 23.602,16.574C23.52,16.827 23.361,17.047 23.147,17.203C22.934,17.359 22.677,17.443 22.414,17.442Z" style="fill:white;fill-rule:nonzero;"/>
+                            <path id="Vector_2" d="M22.414,10.808C22.147,10.808 21.887,10.722 21.671,10.561L12.268,3.541L2.864,10.561C2.598,10.761 2.264,10.845 1.936,10.795C1.608,10.745 1.313,10.566 1.116,10.296C0.919,10.026 0.836,9.688 0.885,9.356C0.934,9.024 1.112,8.726 1.378,8.527L11.525,0.944C11.74,0.783 12,0.696 12.268,0.696C12.535,0.696 12.796,0.783 13.011,0.944L23.157,8.527C23.369,8.685 23.526,8.906 23.606,9.16C23.686,9.414 23.685,9.687 23.603,9.94C23.52,10.192 23.361,10.413 23.147,10.569C22.934,10.724 22.677,10.808 22.414,10.808Z" style="fill:white;fill-rule:nonzero;"/>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

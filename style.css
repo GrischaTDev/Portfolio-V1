@@ -1,0 +1,281 @@
+:root {
+    
+}
+
+body {
+    margin: 0;
+    color: white;
+    font-family: 'Quicksand', sans-serif;
+    background-color: #0e3240;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 54px;
+    color: #0e3240;
+    text-align: center;
+    margin: 0;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 42px;
+    color: white;
+    text-align: center;
+    margin: 0;
+}
+
+h3 {
+    font-weight: bold;
+    font-size: 22px;
+    color: white;
+    text-align: center;
+    margin: 0;
+}
+
+.header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 120px;
+    background-color: #0e3240;
+}
+
+.header-logo {
+    height: 60px;
+}
+
+.mobile-menu {
+    display: none;
+}
+
+menu {
+    display: flex;
+    gap: 20px;
+    color: white;
+}
+
+menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    border-radius: 8px;
+    padding: 8px;
+    background-color: #fc5b5000;
+    transition: 0.5s;
+}
+
+menu a:hover {
+    background-color: #fc5b50;
+    padding: 8px;
+}
+
+.contact-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 20%;
+    right: 0;
+    border-radius: 8px 0 0 8px;
+    background-color: #0e3240;
+}
+.contact-box a {
+    height: 46px;
+    width: 46px;
+}
+
+
+.contact-box img {
+    height: 30px;
+    width: 30px;
+    padding: 8px;
+    background-color: #fc5b5000;
+    border-radius: 8px 0 0 8px;
+    transition: 0.5s;
+}
+
+.contact-box img:hover {
+    background-color: #fc5b50;
+    border-radius: 4px;
+    border-radius: 8px 0 0 8px;
+}
+
+
+.hero {
+    margin-top: 100px;
+    background-image: url(./img/animate-bg.svg);
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.me-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    margin-top: 130px;
+}
+
+.me-container img {
+    height: 500px;
+}
+
+.name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.name h3 {
+    color: #fc5b50;
+    font-size: 28px;
+}
+
+.portfolio-container {
+    
+    margin: 100px 0 170px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.portfolio-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.portfolio-info span {
+    font-size: 20px;
+}
+
+.portfolio-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.portfolio-info a {
+    color: white;
+    text-decoration: none;
+    background-color: #fc5b50;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-radius: 3px
+}
+
+.portfolio-info a:hover {
+    color: white;
+    background-color: #f79790;
+}
+
+.portfolio-liste {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.portfolio-item {
+    width: 300px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 6px 35px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(1.9px);
+}
+
+.portfolio-item img {
+    border-radius: 16px;
+}
+
+
+footer {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    position: fixed;
+    background-color: #0e3240;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+}
+
+footer img {
+    padding-left: 10px;
+    height: 34px;
+}
+
+
+@media (max-width: 1200px) {
+    .header {
+        padding: 0 60px;
+    }
+}
+
+
+@media (max-width: 760px) {
+    .header {
+        height: 80px;
+        padding: 0 24px;
+    }
+
+    .header-logo {
+        height: 40px;
+    }
+
+    .mobile-menu {
+        display: flex;
+        height: 35px;
+    }
+
+    menu {
+        display: none;
+    }
+
+    .hero {
+        margin-top: 80px;
+    }
+
+    .me-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 50px;
+        margin-top: 130px;
+    }
+
+    .name {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .portfolio-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        gap: 20px;
+    }
+}

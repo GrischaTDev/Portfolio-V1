@@ -1,0 +1,88 @@
+.desktop-menu {
+    height: 100vh;
+    width: 232px;
+    /*padding: 64px 0;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    /* gap: 150px; */
+    background-color: var(--dark-blue);
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.10);
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    z-index: 50;
+}
+
+.desktop-menu-logo {
+    width: 100px;
+    height: 122px;
+}
+
+.logo-white {
+    fill: #fff;
+}
+
+.desktop-menu-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 15px;
+    width: 232px;
+}
+
+.desktop-menu-tab {
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 0px 8px 56px;
+    box-sizing: border-box;
+    width: 232px;
+    height: 46px;
+    text-decoration: none;
+}
+
+.desktop-menu-tab img {
+    width: 30px;
+}
+
+.desktop-menu-tab:hover {
+    background-color: #2A3D59;
+}
+
+.desktop-legal-topics {
+    width: 232px;
+    /* padding: 430px 0 0 56px; */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.desktop-legal-topics a {
+    text-decoration: none;
+    color: var(--dark-gray);
+}
+
+.desktop-legal-topics a:active {
+    text-decoration: none;
+    color: var(--white);
+}
+
+.desktop-legal-topics a:hover {
+    color: var(--Ligth-blue);
+    font-weight: 700;
+}
+
+
+@media screen and (max-width: 900px) {
+    .desktop-menu {
+        display: none;
+    }
+}

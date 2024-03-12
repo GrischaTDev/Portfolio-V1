@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets/img/join-logo.svg">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/addtask.css">
+    <link rel="stylesheet" href="css/mobile_menu_header.css">
+    <link rel="stylesheet" href="css/desktop_menu.css">
+
+    <script src="./js/storage.js" defer></script>
+    <script src="./js/board.js" defer></script>
+    <script src="./js/script.js" defer></script>
+    <script src="./js/add_task.js" defer></script>
+    <script src="./js/login.js" defer></script>
+    <script src="/js/add-task-html.js"></script>
+    <script src="/js/allTasks.js"></script>
+    <script src="./js/board-html.js"></script>
+    <title>Join - Add Task</title>
+</head>
+
+<body onload="initAddTasks()" id="container">
+    <div w3-include-html="assets/templates/header.html"></div>
+    <div w3-include-html="assets/templates/desktop_menu.html"></div>
+
+    <div class="content">
+        <div class="header-container">
+            <h1>Add Task</h1>
+        </div>
+
+        <form class="form-width" onsubmit="addTask(); return false;">
+            <div class="add-task-form">
+                <div class="add-task-form-row">
+                    <div class="add-task-title">
+                        <span>Title<span class="red-asterisk">*</span></span>
+                        <input type="text" required placeholder="Enter a title" id="titel">
+                    </div>
+
+                    <div class="add-task-title">
+                        <span>Description</span>
+                        <textarea type="text" minlength="5" placeholder="Enter a description"
+                            id="description"></textarea>
+                    </div>
+
+                    <div class="add-task-title">
+                        <span>Assigned to</span>
+                        <div class="assigned-input">
+                            <input class="input-task-select" id="search-user" autocomplete="off"
+                                onkeydown="filterUser()" onclick="openUserList(event)" type="text"
+                                placeholder="Select contacts to assign">
+                            <img onclick="openUserList(event)" id="input-icon" class="input-arrow"
+                                src="./assets/img/arrow_drop_down_1.svg" alt="">
+                        </div>
+                        <div id="user-list" class="d-none" onclick="doNotClose(event)"></div>
+                        <div id="selected-user"></div>
+                    </div>
+                </div>
+
+                <div class="add-task-border"></div>
+
+                <div class="add-task-form-row">
+                    <div class="add-task-title">
+                        <span>Due a date<span class="red-asterisk">*</span></span>
+                        <input class="input-task-date" type="date" id="dueDate" required>
+                    </div>
+
+                    <div class="add-task-title">
+                        <span>Prio</span>
+                        <div class="priority-buttons">
+                            <button type="button" class="priority-button" id="urgent"
+                                onclick="togglePriority('urgent')">
+                                <span>Urgent</span>
+                                <svg id="svg-urgent" xmlns="http://www.w3.org/2000/svg" width="21" height="15"
+                                    fill="none">
+                                    <g fill="#FF3D00" clip-path="url(#a)">
+                                        <path
+                                            d="M19.571 14.755c-.234 0-.463-.075-.652-.214l-8.252-6.083-8.252 6.083a1.098 1.098 0 0 1-1.304-1.763l8.904-6.57a1.096 1.096 0 0 1 1.304 0l8.904 6.57a1.095 1.095 0 0 1-.652 1.977Z" />
+                                        <path
+                                            d="M19.571 9.006c-.234 0-.463-.075-.652-.214L10.667 2.71 2.415 8.792A1.098 1.098 0 0 1 1.111 7.03L10.015.46a1.096 1.096 0 0 1 1.304 0l8.904 6.57a1.096 1.096 0 0 1-.652 1.977Z" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="a">
+                                            <path fill="#fff" d="M.667.245h20v14.51h-20z" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </button>
+                            <button type="button" class="priority-button active-medium" id="medium"
+                                onclick="togglePriority('medium')">
+                                <span>Medium</span>
+                                <svg id="svg-medium" xmlns="http://www.w3.org/2000/svg" width="18" height="8"
+                                    fill="none">
+                                    <g fill="#FFA800" clip-path="url(#a)">
+                                        <path
+                                            d="M16.569 7.167H1.431a.928.928 0 0 1-.66-.275.942.942 0 0 1 0-1.327.928.928 0 0 1 .66-.275h15.137c.247 0 .483.099.658.275a.942.942 0 0 1 0 1.327.928.928 0 0 1-.659.275ZM16.569 2.71H1.431a.928.928 0 0 1-.66-.275.942.942 0 0 1 0-1.327.928.928 0 0 1 .66-.275h15.137c.247 0 .483.1.658.275a.942.942 0 0 1 0 1.327.928.928 0 0 1-.659.275Z" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="a">
+                                            <path fill="#fff" d="M.5.833h17v6.333H.5z" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </button>
+                            <button type="button" class="priority-button" id="low" onclick="togglePriority('low')">
+                                <span>Low</span>
+                                <svg id="svg-low" xmlns="http://www.w3.org/2000/svg" width="21" height="15" fill="none">
+                                    <g fill="#7AE229">
+                                        <path
+                                            d="M10.334 9.006c-.235 0-.463-.075-.652-.214L.779 2.222A1.096 1.096 0 1 1 2.083.46l8.251 6.082L18.585.46a1.097 1.097 0 0 1 1.304 1.763l-8.903 6.57c-.189.138-.417.213-.652.213Z" />
+                                        <path
+                                            d="M10.334 14.754c-.235 0-.463-.074-.652-.213L.779 7.97a1.096 1.096 0 1 1 1.304-1.763l8.251 6.083 8.251-6.083a1.098 1.098 0 0 1 1.304 1.763l-8.903 6.57c-.189.139-.417.214-.652.213Z" />
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="add-task-title">
+                        <span>Category<span class="red-asterisk">*</span></span>
+                        <select class="input-task-select" required id="category" aria-placeholder="Select task category">
+                            <option value="" disabled selected>Select a Category</option>
+                            <option value="technical-task">Technical Task</option>
+                            <option value="user-story">User Story</option>
+                        </select>
+                    </div>
+
+                    <div class="subtask-container">
+                        <span>Subtask</span>
+                        <div class="input-sub-field">
+                            <input class="input-subtask" id="subtask" placeholder="Add new subtask"/>
+                            <img src="./assets/img/add_subtask.svg" class="suffix" id="addButton" alt="" onclick="addTodo()">
+                        </div>
+                        <ul id="mylist"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="create-task-container">
+                <span>
+                    <span class="red-asterisk">*</span>This field is required
+                </span>
+                <div class="form-button">
+                    <div class="button-clear" onclick="clearInputFields()">
+                        <span>Clear</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none">
+                            <mask id="a" width="24" height="24" x="4" y="4" maskUnits="userSpaceOnUse"
+                                style="mask-type:alpha">
+                                <path fill="#D9D9D9" d="M4 4h24v24H4z" />
+                            </mask>
+                            <g mask="url(#a)">
+                                <path fill="#fff"
+                                    d="m16 17.4-4.9 4.9a.948.948 0 0 1-.7.275.948.948 0 0 1-.7-.275.948.948 0 0 1-.275-.7c0-.283.091-.517.275-.7l4.9-4.9-4.9-4.9a.948.948 0 0 1-.275-.7c0-.283.091-.517.275-.7a.948.948 0 0 1 .7-.275c.283 0 .516.092.7.275l4.9 4.9 4.9-4.9a.948.948 0 0 1 .7-.275c.283 0 .516.092.7.275a.948.948 0 0 1 .275.7.948.948 0 0 1-.275.7L17.4 16l4.9 4.9a.949.949 0 0 1 .275.7.948.948 0 0 1-.275.7.948.948 0 0 1-.7.275.948.948 0 0 1-.7-.275L16 17.4Z" />
+                            </g>
+                        </svg>
+                    </div>
+                    <button class="button-create">
+                        <span>Create Task</span>
+                        <img src="/assets/img/check.svg" alt="">
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="msg-box-create-task" class="d-none">
+        <span>Task added to board <img src="./assets/img/menu-icon-board-white.svg" alt="Board icon"></span>
+    </div>
+
+    <div w3-include-html="assets/templates/mobile_menu.html"></div>
+</body>
+
+</html>

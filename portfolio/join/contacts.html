@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <link rel="stylesheet" href="./assets/fonts/inter-v13-latin-regular.woff2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets/img/join-logo.svg">
+    <link rel="stylesheet" href="./css/contacts.css">
+    <link rel="stylesheet" href="./css/mobile_menu_header.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./css/desktop_menu.css">
+
+    <script src="./js/contact.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/contact_list.js"></script>
+    <script src="./js/contacts-html.js"></script>
+    <script src="./js/login.js" defer></script>
+    <title>Join - Contacts</title>
+</head>
+
+<body onload="initContats()">
+    <div w3-include-html="assets/templates/header.html"></div>
+    <div w3-include-html="assets/templates/desktop_menu.html"></div>
+
+    <div class="contacts_container" id="contacts_container">
+
+        <div id="contacts_list_box" class="contacts_list_box">
+
+            <div id="add_contacts_button_box" class="add_contacts_button_box  z_index4">
+                <div onclick="openAddContactCard()" class="add_contacts_button">
+                    <div class="add_new_contact_text">Add new contact</div>
+                    <img src="./assets/img/add_person_icon.svg" alt="">
+                </div>
+            </div>
+
+            <div class="contacts_list z_index3" id="contacts_list_container"></div>
+
+            <div class="confirmation_container d-none" id="confirmation_container">
+                <div class="contact_created_confirmation move-to-and-hide-from-screen"
+                    id="contact_created_confirmation">
+                    <p>Contact sucessfully saved</p>
+                </div>
+            </div>
+
+            <div id="delete_confirmation_container" class="delete_confirmation_container d-none">
+                <div id="contact_deleted_confirmation"
+                    class="contact_deleted_confirmation move-to-and-hide-from-screen">
+                    <p>Contact succesfully deleted</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="show-contact" class="show-contact">
+            <div class="contact-titel">
+                <h1>Contacts</h1>
+                <div class="blue_line_vertical"></div>
+                <h3>Better with a team!</h3>
+            </div>
+
+            <div onclick="closeEditDeleteContactPopup()" id="showContactContainer"
+                class="showContactContainer z_index1">
+            </div>
+
+            <div class="contacts_slogan_desktop">
+
+                <div class="showContactHeadline"></div>
+
+            </div>
+
+            <div onclick="moveEditDeleteContactPopupFromScreenToRight()" id="edit_delete_contact_popup_screen"
+                class="edit_delete_contact_popup_screen d-none">
+            </div>
+        </div>
+
+        <div id="editContactScreen" class="d-none edit_contact_card-bg" onclick="hideEditCardFromScreen()"></div>
+
+        <div id="addContactScreen" class="d-none add_contact_card-bg" onclick="hideAddContactCardFromScreen()">
+            <div id="add_contact_card" class="add_contact_card" onclick="doNotClose(event)">
+                <div class="add_contact_card_header">
+                    <div class="close_icon_box">
+                        <img style="cursor: pointer;" onclick="hideAddContactCardFromScreen()"
+                            src="./assets/img/close_icon.svg" alt="close Button">
+                    </div>
+                    <div>
+                        <div class="popup_logo">
+                            <svg width="64" height="79" viewBox="0 0 64 79" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <g id="Capa 1">
+                                    <path id="Vector" d="M45.8539 0H31.6777V16.3095H45.8539V0Z" fill="white" />
+                                    <path id="Vector_2"
+                                        d="M31.6783 29.5737H45.8544V52.5757C45.9192 58.1106 44.344 63.5398 41.329 68.1732C38.352 72.675 32.6052 78.0312 21.973 78.0312C10.3922 78.0312 3.64218 72.5545 0 69.5533L8.94188 58.5233C12.4968 61.426 15.9209 63.8138 22.0276 63.8138C26.6512 63.8138 28.4941 61.9298 29.5737 60.2868C31.0413 58.0047 31.8004 55.3359 31.7546 52.6195L31.6783 29.5737Z"
+                                        fill="white" />
+                                    <path id="Vector_3" d="M24.4476 19.2778H10.2715V33.5171H24.4476V19.2778Z"
+                                        fill="#29ABE2" />
+                                    <path id="Vector_4"
+                                        d="M53.2818 71.3496C53.2818 74.3837 51.7442 76.0157 49.596 76.0157C47.4477 76.0157 46.041 74.077 46.041 71.5029C46.041 68.9289 47.4913 66.8916 49.7159 66.8916C51.9405 66.8916 53.2818 68.8961 53.2818 71.3496ZM47.6876 71.4701C47.6876 73.2993 48.4182 74.6465 49.6723 74.6465C50.9263 74.6465 51.6351 73.2226 51.6351 71.3606C51.6351 69.7285 50.9809 68.195 49.6723 68.195C48.3637 68.195 47.6876 69.6737 47.6876 71.4701Z"
+                                        fill="white" />
+                                    <path id="Vector_5" d="M56.0947 67.0234V75.8737H54.5244V67.0234H56.0947Z"
+                                        fill="white" />
+                                    <path id="Vector_6"
+                                        d="M57.7949 75.8737V67.0234H59.5397L61.4153 70.6709C61.8981 71.6246 62.3277 72.6046 62.7021 73.6064C62.6039 72.511 62.5603 71.2514 62.5603 69.8494V67.0234H63.9997V75.8737H62.3749L60.4775 72.1496C59.9751 71.1713 59.5273 70.1657 59.1362 69.1374C59.1362 70.2328 59.2125 71.4705 59.2125 72.993V75.8628L57.7949 75.8737Z"
+                                        fill="white" />
+                                </g>
+                            </svg>
+                        </div>
+                        <h1>Add contact</h1>
+                        <p style="text-align: center; color: white;">Tasks are better with a team!</p>
+                        <div class="blue_line_horizontal"></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="add_contact_card_footer">
+                    <img class="profile_picture" src="./assets/img/profile_picture.svg" alt="profile picture">
+                    <form id="addContactForm" class="inputfields" onsubmit="saveAddedContact(); return false;">
+                        <div onclick="hideAddContactCardFromScreen()" class="popup_close_icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <mask id="mask0_71720_5848" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="4"
+                                    y="4" width="24" height="24">
+                                    <rect x="4" y="4" width="24" height="24" fill="#2A3647" />
+                                </mask>
+                                <g mask="url(#mask0_71720_5848)">
+                                    <path
+                                        d="M15.9998 17.4L11.0998 22.3C10.9165 22.4834 10.6831 22.575 10.3998 22.575C10.1165 22.575 9.88314 22.4834 9.6998 22.3C9.51647 22.1167 9.4248 21.8834 9.4248 21.6C9.4248 21.3167 9.51647 21.0834 9.6998 20.9L14.5998 16L9.6998 11.1C9.51647 10.9167 9.4248 10.6834 9.4248 10.4C9.4248 10.1167 9.51647 9.88338 9.6998 9.70005C9.88314 9.51672 10.1165 9.42505 10.3998 9.42505C10.6831 9.42505 10.9165 9.51672 11.0998 9.70005L15.9998 14.6L20.8998 9.70005C21.0831 9.51672 21.3165 9.42505 21.5998 9.42505C21.8831 9.42505 22.1165 9.51672 22.2998 9.70005C22.4831 9.88338 22.5748 10.1167 22.5748 10.4C22.5748 10.6834 22.4831 10.9167 22.2998 11.1L17.3998 16L22.2998 20.9C22.4831 21.0834 22.5748 21.3167 22.5748 21.6C22.5748 21.8834 22.4831 22.1167 22.2998 22.3C22.1165 22.4834 21.8831 22.575 21.5998 22.575C21.3165 22.575 21.0831 22.4834 20.8998 22.3L15.9998 17.4Z"
+                                        fill="#2A3647" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="inputfield_box">
+                            <input id="add_contact_fname" class="inputfield" type="text" required
+                                placeholder="First Name" required>
+                            <img class="input_icon" src="./assets/img/profile_mini_icon.svg" alt="profile icon">
+                        </div>
+                        <div class="inputfield_box">
+                            <input id="add_contact_lname" class="inputfield" type="text" required
+                                placeholder="Last Name" required>
+                            <img class="input_icon" src="./assets/img/profile_mini_icon.svg" alt="profile icon">
+                        </div>
+                        <div class="inputfield_box">
+                            <input id="add_contact_email" class="inputfield" type="email" required placeholder="Email"
+                                required>
+                            <img class="input_icon" src="./assets/img/mail_icon.svg" alt="email icon">
+                        </div>
+                        <div class="inputfield_box">
+                            <input id="add_contact_phone" class="inputfield" type="number" name="phone" required
+                                placeholder="Phone">
+                            <img class="input_icon" src="./assets/img/phone_icon.svg" alt="phone icon">
+                        </div>
+                        <div class="save_contact_box">
+                            <button type="submit" class="submit_create_contact_button">Create contact</button>
+                            <img class="input_icon" src="./assets/img/check.svg" alt="check">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div w3-include-html="assets/templates/mobile_menu.html"></div>
+
+</body>
+
+</html>

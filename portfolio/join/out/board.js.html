@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: board.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: board.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>loggedInUser = [];
+
+let currentDraggedElement;
+
+
+/**
+ * This function is used to initial the board.
+ */
+async function initBoard() {
+  await includeHTML();
+  loadAllTasks();
+  activeMenu();
+  load();
+  loadUsers();
+  loadUserProfile();
+  showAllTasks(allTasks);
+  if (!localStorage.getItem("allTasks")) {
+    saveTasksToLocalStorage(allTasks);
+  } else {
+    allTasks = JSON.parse(localStorage.getItem("allTasks"));
+    saveTasksToLocalStorage(allTasks);
+  }
+}
+
+
+/**
+ * This functioin is used to open a new Task Popup.
+ */
+function openAddNewTaskPopup() {
+  if (window.innerWidth > 900) {
+    document.body.classList.add("popup-open");
+    document
+      .getElementById("add-task-popup-container")
+      .classList.remove("d-none");
+    document.getElementById("add-task-popup-container").innerHTML = "";
+    document.getElementById("add-task-popup-container").innerHTML +=
+      renderAddNewTaskInPopup();
+  } else {
+    window.location.href = "add_task.html";
+  }
+}
+
+
+/**
+ * This function is used to close the add new Task Popup.
+ */
+function closeAddTaskPopup() {
+  document.getElementById("add-task-popup-container").classList.add("d-none");
+  document.body.classList.remove("popup-open");
+}
+
+
+/**
+ * Displays a popup window with details of a task.
+ * 
+ * @param {number} taskId - The ID of the task to be displayed.
+ */
+function showPopup(taskId) {
+  document.body.classList.add('popup-open');
+  let task = findTaskById(taskId);
+  let urgentSymbolHTML = task.priority.urgent ? `&lt;img src="/assets/img/prio-urgent.svg" alt="Urgent"> Urgent` : "";
+  let mediumSymbolHTML = task.priority.medium ? `&lt;img src="/assets/img/prio-medium.svg" alt="Medium"> Medium` : "";
+  let lowSymbolHTML = task.priority.low ? `&lt;img src="/assets/img/prio-low.svg" alt="Low"> Low` : "";
+  let userNamesHTML = task.userList.map((user) => renderInitialsForPopup(user)
+  ).join("");
+  let subtasksHTML = task.subtask ? task.subtask.map((subtask) => renderSubtasksInPopup(taskId, subtask)
+  ).join("") : "";
+  document.getElementById("incomePopup").classList.remove("d-none");
+  document.getElementById("incomePopup").innerHTML = renderTaskDetailsInPopup(task, urgentSymbolHTML, mediumSymbolHTML, lowSymbolHTML, userNamesHTML, subtasksHTML);
+}
+
+
+/**
+ * This function is used to close the Popup that shows the Task details
+ */
+function closeIncomePopup() {
+  document.getElementById("incomePopup").classList.add("d-none");
+  document.body.classList.remove("popup-open");
+}
+
+
+/**
+ * Opens a popup window to edit the details of a selected task.
+ * 
+ * @param {number} taskId - The ID of the task to be edited.
+ */
+function editPopup(taskId) {
+  document.body.classList.add('popup-open');
+  document.getElementById("incomePopup").classList.add("d-none");
+  document.getElementById('content-board').classList.add('do-not-scroll');
+  document.getElementById('edit_popup').classList.remove('d-none');
+  document.getElementById('edit_popup').innerHTML = '';
+  let tasks = JSON.parse(localStorage.getItem('allTasks'));
+  let taskToEdit = tasks.find(task => task.id === taskId);
+  if (taskToEdit &amp;&amp; taskToEdit.subtask) {
+    todos = taskToEdit.subtask.map(subtask => subtask.name);
+  } else {
+    todos = [];
+  }
+  renderEditPopup(taskId);
+}
+
+
+/**
+ * Renders a popup window for editing the details of a selected task.
+ * 
+ * @param {number} taskId - The ID of the task to be edited.
+ */
+function renderEditPopup(taskId) {
+  let tasks = JSON.parse(localStorage.getItem('allTasks'));
+  let taskToEdit = tasks.find(task => task.id === taskId);
+  document.getElementById('edit_popup').innerHTML += generateHtmlForEditPopup(taskId);
+  getValuesFromAllTasksArray(taskToEdit);
+  taskToEdit.userList.forEach(user => {
+    document.getElementById('selected-user').innerHTML += renderAssignedUserInEditPopup(user);
+  });
+  showTodos();
+}
+
+
+/**
+ * 
+ * 
+ * @param {*} taskToEdit 
+ */
+function getValuesFromAllTasksArray(taskToEdit) {
+  document.getElementById('titel').value = taskToEdit.titel;
+  document.getElementById('description').value = taskToEdit.description;
+  document.getElementById('dueDate').value = taskToEdit.dueDate;
+  if (taskToEdit.priority.urgent) {
+    document.getElementById('urgent').classList.add('active');
+  } else if (taskToEdit.priority.medium) {
+    document.getElementById('medium').classList.add('active');
+  } else {
+    document.getElementById('low').classList.add('active');
+  }
+}
+
+
+/**
+ * This function closes the user list in a popup
+ */
+function closeUserListInPopup() {
+  document.getElementById("user-list").classList.add("d-none");
+}
+
+
+/**
+ * Renders the selected users by displaying their initials inside colored circles.
+ * 
+ * @param {Array} selectedUser - An array containing user objects with 'color' property.
+ */
+function renderSelectedUsersInEdit(selectedUser) {
+  let selectedUserList = document.getElementById('selected-user');
+  selectedUserList.innerHTML = '';
+  selectedUser.forEach(user => {
+    let initialLetters = nameInitialLettersAddTasks(user);
+    const userColor = user['color'];
+    selectedUserList.innerHTML += /* html */ `
+        &lt;div class="user-icon" style="background-color: ${userColor};">${initialLetters}&lt;/div>
+      `;
+  });
+}
+
+
+/**
+ * 
+ * @param {*} event 
+ */
+function openUserListEdit(event) {
+  let userList = document.getElementById("user-list");
+  let inputIcon = document.getElementById("input-icon");
+  userList.innerHTML = "";
+  if (userList.classList.contains("d-none")) {
+    userList.classList.remove("d-none");
+    inputIcon.src = "./assets/img/arrow_drop_down_2.svg";
+  }
+  users.forEach((user, i) => {
+    const userColor = user["color"];
+    let initialLetters = nameInitialLettersAddTasks(user);
+    userList.innerHTML += renderUserListInEditPopup(user, userColor, initialLetters, i);
+  });
+}
+
+
+/**
+ * This function checks if a user is selected in edit popup
+ * 
+ * @param {*} userId 
+ */
+function isUSerSelectedEdit(userId) {
+  return selectedUser.some((su) => su.id === userId);
+}
+
+
+/**
+ * This function is used to add or remove with toggle a user to userlist in edit popup
+ * 
+ * @param {*} userId 
+ */
+function toggleAddUserEdit(userId) {
+  let user = users.find((u) => u.id === userId);
+  let selectedUSerIndex = selectedUser.findIndex((u) => u.id === userId);
+  let checkBoxUser = document.getElementById(`user-checkbox${userId}`);
+  if (selectedUSerIndex === -1) {
+    selectedUser.push(user);
+    checkBoxUser.src = "./assets/img/checkbox_active_white.svg";
+  } else {
+    selectedUser.splice(selectedUSerIndex, 1);
+    checkBoxUser.src = "./assets/img/checkbox.svg";
+  }
+  renderSelectedUsersInEdit(selectedUser);
+}
+
+
+/**
+ * This function saves a selected user to local storage
+ * 
+ * @param {*} selectedUser 
+ */
+function saveSelectedUserToLocalStorage(selectedUser) {
+  localStorage.setItem("selectedUser", JSON.stringify(selectedUser));
+}
+
+
+/**
+ * This function loads selected users from local storage
+ */
+function loadSelectedUserFromLocalStorage() {
+  let loadUser = localStorage.getItem("selectedUser");
+  if (loadUser) {
+    selectedUser = JSON.parse(loadUser);
+  }
+}
+
+
+/**
+ * this function checks if a user is selected in addTask
+ * 
+ * @param {*} i 
+ */
+function isUSerSelected(i) {
+  return selectedUser.some((su) => su.id === i);
+}
+
+
+/**
+ * this function is used to generate initial letters of users
+ * 
+ * @param {*} user 
+ */
+function nameInitialLettersAddTasks(user) {
+  const fullNameSplitt = user.name.split(" ");
+  const letters = fullNameSplitt.map((name) => name[0]);
+  const initialLetters = letters.join("");
+  return initialLetters;
+}
+
+
+// /**
+//  * this function is used to prevent to close a popup by clicking on it
+//  * 
+//  * @param {*} event 
+//  */
+// function doNotClose(event) {
+//   event.stopPropagation();
+// }
+
+
+/**
+ * This function is used to add or remove with toggle a user to userlist in addTask popup
+ * 
+ * @param {*} userId 
+ */
+function toggleAddUser(i) {
+  let userColumn = document.getElementById(`currentUser${i}`);
+  let user = users[i];
+  let selectedUSerIndex = selectedUser.findIndex((u) => u.id === i);
+  let checkBoxUser = document.getElementById(`user-checkbox${i}`);
+  if (selectedUSerIndex === -1) {
+    userColumn.classList.add("user-list-active");
+    selectedUser.push(user);
+    checkBoxUser.src = "./assets/img/checkbox_active_white.svg";
+  } else {
+    userColumn.classList.remove("user-list-active");
+    selectedUser.splice(selectedUSerIndex, 1);
+    checkBoxUser.src = "./assets/img/checkbox.svg";
+  }
+  renderUserList(i);
+  save();
+}
+
+
+/**
+ * this function is used to update the user list in tasks
+ */
+function updateUserListInTasks() {
+  allTasks.forEach((task) => {
+    // Überprüfen, ob der Task Benutzer hat
+    if (task.userList &amp;&amp; task.userList.length > 0) {
+      task.userList = task.userList.map((user) => {
+        // Suchen des entsprechenden Benutzers im selectedUser-Array
+        const selectedUserIndex = selectedUser.findIndex(
+          (selected) => selected.name === user.fname + " " + user.lname
+        );
+        if (selectedUserIndex !== -1) {
+          // Aktualisieren der Benutzerdaten im Task
+          user.backgroundcolor = selectedUser[selectedUserIndex].color;
+        }
+        return user;
+      });
+    }
+  });
+}
+
+
+/**
+ * This function saves an edited Task
+ * 
+ * @param {*} taskId - The ID of the task to be edited.
+ */
+function SaveEditedTask(taskId) {
+  const editedTask = generateEditedTask(taskId);
+  const allTasks = JSON.parse(localStorage.getItem('allTasks'));
+  const index = allTasks.findIndex(task => task.id === taskId);
+  if (index !== -1) {
+    allTasks[index] = editedTask;
+  }
+  localStorage.setItem('allTasks', JSON.stringify(allTasks));
+  closeEditPopup();
+}
+
+
+/**
+ * Generates an edited task object based on the provided taskId and DOM elements.
+ * 
+ * @param {*} taskId - The ID of the task to be edited.
+ * @returns {*} - The edited task object.
+ */
+function generateEditedTask(taskId) {
+  return {
+    id: taskId,
+    titel: document.getElementById('titel').value,
+    description: document.getElementById('description').value,
+    dueDate: document.getElementById('dueDate').value,
+    category: allTasks.find(task => task.id === taskId).category,
+    priority: {
+      low: document.getElementById('low').classList.contains('active-low'),
+      medium: document.getElementById('medium').classList.contains('active-medium'),
+      urgent: document.getElementById('urgent').classList.contains('active-urgent')
+    },
+    subtask: todos.map(name => ({ name, status: false })),
+    userList: selectedUser.map(user => ({
+      fname: user.name.split(' ')[0],
+      lname: user.name.split(' ')[1],
+      backgroundcolor: user.color
+    })),
+    progressfield: allTasks.find(task => task.id === taskId).progressfield
+  };
+}
+
+
+/**
+ * this function closes the edit popup
+ */
+function closeEditPopup() {
+  document.getElementById('user-list').classList.add('d-none');
+  document.body.classList.remove('popup-open');
+  document.getElementById("edit_popup").classList.add("d-none");
+  loadAllTasks();
+  showAllTasks(allTasks);
+}
+
+
+/**
+ * This function is used to update the subtask status
+ * 
+ * @param {*} taskId 
+ * @param {*} subtaskName 
+ * @param {*} status 
+ */
+function updateSubtaskStatus(taskId, subtaskName, status) {
+  let task = findTaskById(taskId);
+  if (task) {
+    let subtask = task.subtask.find(sub => sub.name === subtaskName);
+    if (subtask &amp;&amp; subtask.status !== status) {
+      subtask.status = status;
+      let completedSubtasks = task.subtask ? task.subtask.filter(subtask => subtask.status).length : 0;
+      let totalSubtasks = task.subtask ? task.subtask.length : 0;
+      let progressPercentage = Math.round((completedSubtasks / totalSubtasks) * 100);
+      task.progress = progressPercentage;
+      saveTasksToLocalStorage(allTasks);
+      showAllTasks(allTasks);
+    }
+  }
+}
+
+
+/**
+ * This function is used to find tasks by id
+ * 
+ * @param {*} taskId 
+ */
+function findTaskById(taskId) {
+  for (let i = 0; i &lt; allTasks.length; i++) {
+    if (allTasks[i].id === taskId) {
+      return allTasks[i];
+    }
+  }
+  return null;
+}
+
+
+/**
+ * This function is used to filter all Tasks from array to render in the correct progressfield
+ * 
+ * @param {*} allTasks - 
+ */
+function showAllTasks(allTasks) {
+  filterAndRenderTasksForTodo(allTasks);
+  filterAndRenderTasksForInProgress(allTasks);
+  filterAndRenderTasksAwaitFeedback(allTasks);
+  filterAndRenderTasksDone(allTasks);
+}
+
+
+/**
+ * This function filter all Tasks for 'todo' progressfield
+ * 
+ * @param {*} allTasks 
+ */
+function filterAndRenderTasksForTodo(allTasks) {
+  let todo_container = allTasks.filter(
+    (t) => t["progressfield"] == "todo_container"
+  );
+  document.getElementById("todo_container").innerHTML = "";
+  if (todo_container.length === 0) {
+    document.getElementById('todo_container').innerHTML = renderEmptyProgressfieldTodo();
+  } else {
+    for (let i = 0; i &lt; todo_container.length; i++) {
+      let task = todo_container[i];
+      let taskDetails = calculateTaskDetails(task);
+      document.getElementById('todo_container').innerHTML += renderAllTasksInProgressfieldTodo(task, taskDetails.urgentSymbolHTML, taskDetails.mediumSymbolHTML, taskDetails.lowSymbolHTML, taskDetails.userInitialsHTML, taskDetails.progressPercentage, taskDetails.completedSubtasks, taskDetails.totalSubtasks);
+    }
+  }
+}
+
+
+/**
+ * This function filter all Tasks for 'in progress' progressfield
+ * 
+ * @param {*} allTasks 
+ */
+function filterAndRenderTasksForInProgress(allTasks) {
+  let inprogress_container = allTasks.filter(
+    (t) => t["progressfield"] == "inprogress_container"
+  );
+  document.getElementById("inprogress_container").innerHTML = "";
+  for (let i = 0; i &lt; inprogress_container.length; i++) {
+    let task = inprogress_container[i];
+    let taskDetails = calculateTaskDetails(task);
+    document.getElementById("inprogress_container").innerHTML += renderAllTasksInProgressfieldInProgress(task, taskDetails.urgentSymbolHTML, taskDetails.mediumSymbolHTML, taskDetails.lowSymbolHTML, taskDetails.userInitialsHTML, taskDetails.progressPercentage, taskDetails.completedSubtasks, taskDetails.totalSubtasks);
+  }
+}
+
+
+/**
+ * This function filter all Tasks for 'await feedback' progressfield
+ * 
+ * @param {*} allTasks 
+ */
+function filterAndRenderTasksAwaitFeedback(allTasks) {
+  let await_feedback_container = allTasks.filter(
+    (t) => t["progressfield"] == "await_feedback_container"
+  );
+  document.getElementById("await_feedback_container").innerHTML = "";
+  for (let i = 0; i &lt; await_feedback_container.length; i++) {
+    let task = await_feedback_container[i];
+    let taskDetails = calculateTaskDetails(task);
+    document.getElementById("await_feedback_container").innerHTML += renderAllTasksInProgressfieldAwaitFeedback(task, taskDetails.urgentSymbolHTML, taskDetails.mediumSymbolHTML, taskDetails.lowSymbolHTML, taskDetails.userInitialsHTML, taskDetails.progressPercentage, taskDetails.completedSubtasks, taskDetails.totalSubtasks);
+  }
+}
+
+
+/**
+ * This function filter all Tasks for 'done' progressfield
+ * 
+ * @param {*} allTasks 
+ */
+function filterAndRenderTasksDone(allTasks) {
+  let done_container = allTasks.filter(
+    (t) => t["progressfield"] == "done_container"
+  );
+  document.getElementById("done_container").innerHTML = "";
+  for (let i = 0; i &lt; done_container.length; i++) {
+    let task = done_container[i];
+    let taskDetails = calculateTaskDetails(task);
+    document.getElementById("done_container").innerHTML += renderAllTasksInProgressfieldDone(task, taskDetails.urgentSymbolHTML, taskDetails.mediumSymbolHTML, taskDetails.lowSymbolHTML, taskDetails.userInitialsHTML, taskDetails.progressPercentage, taskDetails.completedSubtasks, taskDetails.totalSubtasks);
+  }
+}
+
+
+/**
+ * this function calculates all tasks details
+ * 
+ * @param {*} task 
+ */
+function calculateTaskDetails(task) {
+  let urgentSymbolHTML = task.priority.urgent ? `&lt;img src="/assets/img/prio-urgent.svg" alt="Urgent">` : "";
+  let mediumSymbolHTML = task.priority.medium ? `&lt;img src="/assets/img/prio-medium.svg" alt="Medium">` : "";
+  let lowSymbolHTML = task.priority.low ? `&lt;img src="/assets/img/prio-low.svg" alt="Low">` : "";
+  let userInitialsHTML = task.userList.map((user) => `&lt;div class="initials-circle" style="background-color: ${user.backgroundcolor};">${user.fname.charAt(0)}${user.lname.charAt(0)}&lt;/div>`).join("");
+  let completedSubtasks = task.subtask ? task.subtask.filter((subtask) => subtask.status).length : 0;
+  let totalSubtasks = task.subtask ? task.subtask.length : 0;
+  let progressPercentage = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
+  return { urgentSymbolHTML, mediumSymbolHTML, lowSymbolHTML, userInitialsHTML, completedSubtasks, totalSubtasks, progressPercentage, };
+}
+
+
+/**
+ * this function allows to drag an element
+ * 
+ * @param {*} index 
+ */
+function startDragging(index) {
+  currentDraggedElement = index;
+}
+
+
+/**
+ * this function allows too drop an element
+ * 
+ * @param {*} ev 
+ */
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+
+/**
+ * this function moves a task in other progressfields
+ * 
+ * @param {*} progressfield 
+ */
+function moveTo(progressfield) {
+  const taskIndex = currentDraggedElement - 1;
+  allTasks[taskIndex]["progressfield"] = progressfield;
+  localStorage.setItem("allTasks", JSON.stringify(allTasks));
+  showAllTasks(allTasks);
+}
+
+
+/**
+ * this function is used to highlight the progressfield while dragging
+ * 
+ * @param {*} id 
+ */
+function highlight(id) {
+  document.getElementById(id).classList.add("drag-area-highlight");
+}
+
+
+/**
+ * this function removes the highlight when task is dropped
+ * 
+ * @param {*} id 
+ */
+function removeHighlight(id) {
+  document.getElementById(id).classList.remove("drag-area-highlight");
+}
+
+
+/**
+ * this function is used to search tasks 
+ */
+function findTask() {
+  let searchInput = document.getElementById('search').value.toLowerCase();
+  let filteredTasks = allTasks.filter(task =>
+    task.titel.toLowerCase().includes(searchInput) ||
+    task.description.toLowerCase().includes(searchInput) ||
+    task.category.toLowerCase().includes(searchInput)
+  );
+  showAllTasks(filteredTasks);
+}
+
+
+/**
+ * this function deletes a task
+ * 
+ * @param {*} taskId 
+ */
+function deleteTask(taskId) {
+  let allTasks = JSON.parse(localStorage.getItem("allTasks")) || [];
+  let taskIndex = allTasks.findIndex(task => task.id === taskId);
+  if (taskIndex !== -1) {
+    allTasks.splice(taskIndex, 1);
+    saveTasksToLocalStorage(allTasks);
+    loadAllTasks();
+    closeIncomePopup();
+    showAllTasks(allTasks);
+  } else {
+    console.log("Task not found");
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#SaveEditedTask">SaveEditedTask</a></li><li><a href="global.html#activeMenu">activeMenu</a></li><li><a href="global.html#addTask">addTask</a></li><li><a href="global.html#addTodo">addTodo</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#allowDrop">allowDrop</a></li><li><a href="global.html#calculateTaskDetails">calculateTaskDetails</a></li><li><a href="global.html#changePasswordIcon">changePasswordIcon</a></li><li><a href="global.html#checkPassword">checkPassword</a></li><li><a href="global.html#checkPrivacyConsent">checkPrivacyConsent</a></li><li><a href="global.html#clearAddContactInputfields">clearAddContactInputfields</a></li><li><a href="global.html#clearAllInputfieldsInAddTask">clearAllInputfieldsInAddTask</a></li><li><a href="global.html#clearInputFields">clearInputFields</a></li><li><a href="global.html#closeAddContactCard">closeAddContactCard</a></li><li><a href="global.html#closeAddTaskPopup">closeAddTaskPopup</a></li><li><a href="global.html#closeEditContactCard">closeEditContactCard</a></li><li><a href="global.html#closeEditDeleteContactPopup">closeEditDeleteContactPopup</a></li><li><a href="global.html#closeEditPopup">closeEditPopup</a></li><li><a href="global.html#closeIncomePopup">closeIncomePopup</a></li><li><a href="global.html#closeShowContact">closeShowContact</a></li><li><a href="global.html#closeUserListInPopup">closeUserListInPopup</a></li><li><a href="global.html#contact_list">contact_list</a></li><li><a href="global.html#declareInputs">declareInputs</a></li><li><a href="global.html#deleteSelectedContact">deleteSelectedContact</a></li><li><a href="global.html#deleteTask">deleteTask</a></li><li><a href="global.html#deleteTodo">deleteTodo</a></li><li><a href="global.html#doNotClose">doNotClose</a></li><li><a href="global.html#editPopup">editPopup</a></li><li><a href="global.html#editTodo">editTodo</a></li><li><a href="global.html#fillEditContactCardWithContactData">fillEditContactCardWithContactData</a></li><li><a href="global.html#filterAndRenderTasksAwaitFeedback">filterAndRenderTasksAwaitFeedback</a></li><li><a href="global.html#filterAndRenderTasksDone">filterAndRenderTasksDone</a></li><li><a href="global.html#filterAndRenderTasksForInProgress">filterAndRenderTasksForInProgress</a></li><li><a href="global.html#filterAndRenderTasksForTodo">filterAndRenderTasksForTodo</a></li><li><a href="global.html#filterUser">filterUser</a></li><li><a href="global.html#findTask">findTask</a></li><li><a href="global.html#findTaskById">findTaskById</a></li><li><a href="global.html#generateContactDetailsHtml">generateContactDetailsHtml</a></li><li><a href="global.html#generateEditedTask">generateEditedTask</a></li><li><a href="global.html#generateHtmlForEditPopup">generateHtmlForEditPopup</a></li><li><a href="global.html#generateUniqueId">generateUniqueId</a></li><li><a href="global.html#generateUserListHTML">generateUserListHTML</a></li><li><a href="global.html#getNewContactInformation">getNewContactInformation</a></li><li><a href="global.html#getValueFromAddTaskForm">getValueFromAddTaskForm</a></li><li><a href="global.html#getValuesFromAllTasksArray">getValuesFromAllTasksArray</a></li><li><a href="global.html#groupContactsByFirstLetter">groupContactsByFirstLetter</a></li><li><a href="global.html#guestLogIn">guestLogIn</a></li><li><a href="global.html#hideAddContactCardFromScreen">hideAddContactCardFromScreen</a></li><li><a href="global.html#hideContactCreatedConfirmation">hideContactCreatedConfirmation</a></li><li><a href="global.html#hideContactDeletedConfirmation">hideContactDeletedConfirmation</a></li><li><a href="global.html#hideEditCardFromScreen">hideEditCardFromScreen</a></li><li><a href="global.html#highlight">highlight</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initAddTasks">initAddTasks</a></li><li><a href="global.html#initBoard">initBoard</a></li><li><a href="global.html#initContactList">initContactList</a></li><li><a href="global.html#initLogin">initLogin</a></li><li><a href="global.html#initSummary">initSummary</a></li><li><a href="global.html#isUSerSelected">isUSerSelected</a></li><li><a href="global.html#isUSerSelectedEdit">isUSerSelectedEdit</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadAddTaskUser">loadAddTaskUser</a></li><li><a href="global.html#loadAllTasks">loadAllTasks</a></li><li><a href="global.html#loadContactList">loadContactList</a></li><li><a href="global.html#loadRegisteredUser">loadRegisteredUser</a></li><li><a href="global.html#loadRegisteredUsers">loadRegisteredUsers</a></li><li><a href="global.html#loadRememberMeInputValue">loadRememberMeInputValue</a></li><li><a href="global.html#loadRememberMeUser">loadRememberMeUser</a></li><li><a href="global.html#loadSelectedUserFromLocalStorage">loadSelectedUserFromLocalStorage</a></li><li><a href="global.html#loadTodos">loadTodos</a></li><li><a href="global.html#loadUsers">loadUsers</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#moveEditDeleteContactPopupFromScreenToRight">moveEditDeleteContactPopupFromScreenToRight</a></li><li><a href="global.html#moveTo">moveTo</a></li><li><a href="global.html#nameInitialLettersAddTasks">nameInitialLettersAddTasks</a></li><li><a href="global.html#openAddContactCard">openAddContactCard</a></li><li><a href="global.html#openAddNewTaskPopup">openAddNewTaskPopup</a></li><li><a href="global.html#openEditContactCard">openEditContactCard</a></li><li><a href="global.html#openEditDeleteContactPopup">openEditDeleteContactPopup</a></li><li><a href="global.html#openUserList">openUserList</a></li><li><a href="global.html#openUserListEdit">openUserListEdit</a></li><li><a href="global.html#privacyCheck">privacyCheck</a></li><li><a href="global.html#pushRememberMe">pushRememberMe</a></li><li><a href="global.html#rememberMe">rememberMe</a></li><li><a href="global.html#removeAnimationsFromOpenAddContactCard">removeAnimationsFromOpenAddContactCard</a></li><li><a href="global.html#removeAnimationsFromOpenEditContactCard">removeAnimationsFromOpenEditContactCard</a></li><li><a href="global.html#removeHighlight">removeHighlight</a></li><li><a href="global.html#renderAddNewTaskInPopup">renderAddNewTaskInPopup</a></li><li><a href="global.html#renderAllTasksInProgressfieldAwaitFeedback">renderAllTasksInProgressfieldAwaitFeedback</a></li><li><a href="global.html#renderAllTasksInProgressfieldDone">renderAllTasksInProgressfieldDone</a></li><li><a href="global.html#renderAllTasksInProgressfieldInProgress">renderAllTasksInProgressfieldInProgress</a></li><li><a href="global.html#renderAllTasksInProgressfieldTodo">renderAllTasksInProgressfieldTodo</a></li><li><a href="global.html#renderAssignedUserInEditPopup">renderAssignedUserInEditPopup</a></li><li><a href="global.html#renderContactDetails">renderContactDetails</a></li><li><a href="global.html#renderEditContactCard">renderEditContactCard</a></li><li><a href="global.html#renderEditDeleteContactPoup">renderEditDeleteContactPoup</a></li><li><a href="global.html#renderEditPopup">renderEditPopup</a></li><li><a href="global.html#renderEmptyProgressfieldTodo">renderEmptyProgressfieldTodo</a></li><li><a href="global.html#renderInitialsForPopup">renderInitialsForPopup</a></li><li><a href="global.html#renderLetterbox">renderLetterbox</a></li><li><a href="global.html#renderSelectedUsersInEdit">renderSelectedUsersInEdit</a></li><li><a href="global.html#renderSnippetBox">renderSnippetBox</a></li><li><a href="global.html#renderSubtasksInPopup">renderSubtasksInPopup</a></li><li><a href="global.html#renderTaskDetailsInPopup">renderTaskDetailsInPopup</a></li><li><a href="global.html#renderUserList">renderUserList</a></li><li><a href="global.html#renderUserListInEditPopup">renderUserListInEditPopup</a></li><li><a href="global.html#resetForm">resetForm</a></li><li><a href="global.html#resetLoginForm">resetLoginForm</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#saveAddedContact">saveAddedContact</a></li><li><a href="global.html#saveEditedContact">saveEditedContact</a></li><li><a href="global.html#saveRememberMe">saveRememberMe</a></li><li><a href="global.html#saveSelectedUserToLocalStorage">saveSelectedUserToLocalStorage</a></li><li><a href="global.html#saveTasksToLocalStorage">saveTasksToLocalStorage</a></li><li><a href="global.html#selectContact">selectContact</a></li><li><a href="global.html#selectedContactIfElseBranch">selectedContactIfElseBranch</a></li><li><a href="global.html#setMinimumDateForToday">setMinimumDateForToday</a></li><li><a href="global.html#setVariableforSaveTask">setVariableforSaveTask</a></li><li><a href="global.html#showAllTasks">showAllTasks</a></li><li><a href="global.html#showContactCreatedConfirmation">showContactCreatedConfirmation</a></li><li><a href="global.html#showContactDeletedConfirmation">showContactDeletedConfirmation</a></li><li><a href="global.html#showPassword">showPassword</a></li><li><a href="global.html#showPopup">showPopup</a></li><li><a href="global.html#showTaskOnPage">showTaskOnPage</a></li><li><a href="global.html#showTodos">showTodos</a></li><li><a href="global.html#startDragging">startDragging</a></li><li><a href="global.html#successfullyMessage">successfullyMessage</a></li><li><a href="global.html#toggleAddUser">toggleAddUser</a></li><li><a href="global.html#toggleAddUserEdit">toggleAddUserEdit</a></li><li><a href="global.html#togglePriority">togglePriority</a></li><li><a href="global.html#updateContact">updateContact</a></li><li><a href="global.html#updateSubtaskStatus">updateSubtaskStatus</a></li><li><a href="global.html#updateTodo">updateTodo</a></li><li><a href="global.html#updateUserListInTasks">updateUserListInTasks</a></li><li><a href="global.html#userPush">userPush</a></li><li><a href="global.html#userPushLogin">userPushLogin</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat Mar 09 2024 20:24:56 GMT+0100 (Mitteleuropäische Normalzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
