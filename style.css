@@ -29,6 +29,14 @@ h3 {
     margin: 0;
 }
 
+.color1 {
+    color: #fc5b50;        
+}
+
+.color2 {
+    color: #0e3240;
+}
+
 .header {
     position: absolute;
     top: 0;
@@ -118,7 +126,7 @@ menu a:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 50px;
+    gap: 10%;
     margin-top: 130px;
 }
 
@@ -149,16 +157,11 @@ menu a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
 }
 
 .portfolio-info span {
     font-size: 20px;
-}
-
-.portfolio-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .portfolio-info a {
@@ -188,6 +191,7 @@ menu a:hover {
     padding: 20px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 20px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 16px;
@@ -195,10 +199,23 @@ menu a:hover {
     backdrop-filter: blur(1.9px);
 }
 
+.portfolio-item:hover {
+    background: rgb(255 255 255 / 19%);
+}
+
 .portfolio-item img {
     border-radius: 16px;
 }
 
+.portfolio-description {
+    text-align: center;
+    font-size: 16px !important;
+}
+
+.portfolio-btn {
+    display: flex;
+    gap: 20px;
+}
 
 footer {
     bottom: 0;
