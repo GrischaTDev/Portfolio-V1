@@ -29,6 +29,14 @@ h3 {
     margin: 0;
 }
 
+h4 {
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    text-align: center;
+    margin: 0;
+}
+
 .color1 {
     color: #fc5b50;        
 }
@@ -145,8 +153,37 @@ menu a:hover {
     font-size: 28px;
 }
 
+.about-me-container {  
+    margin: 100px 0 170px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.about-me-text {
+    display: flex;
+}
+
+.skills {
+    display: flex;
+    justify-content: center;
+    gap: 58px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.skill-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.skills img {
+    height: 68px;
+}
+
 .portfolio-container {
-    
     margin: 100px 0 170px 0;
     display: flex;
     flex-direction: column;
