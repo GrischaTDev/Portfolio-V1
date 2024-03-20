@@ -7,7 +7,7 @@ body {
 
 h1 {
     font-weight: bold;
-    font-size: 54px;
+    font-size: 74px;
     color: #0e3240;
     text-align: center;
     margin: 0;
@@ -92,7 +92,7 @@ menu a:hover {
     flex-direction: column;
     align-items: center;
     position: fixed;
-    top: 20%;
+    top: 40%;
     right: 0;
     border-radius: 8px 0 0 8px;
     background-color: #0e3240;
@@ -120,26 +120,34 @@ menu a:hover {
 
 
 .hero {
-    margin-top: 100px;
-    background-position: center;
+    background-position: inherit;
     background-size: cover;
     display: flex;
     justify-content: center;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    height: 100vh;
+}
+
+.me-container-name {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10%;
 }
 
 .me-container {
     width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items:flex-end;
     gap: 10%;
-    margin-top: 130px;
+    height: 100vh;
 }
 
 .me-container img {
-    max-height: 500px;
+    max-height: 700px;
 }
 
 .name {
@@ -150,18 +158,38 @@ menu a:hover {
 
 .name h3 {
     color: #fc5b50;
-    font-size: 28px;
+    font-size: 38px;
 }
 
-.about-me-container {  
+.about-me {  
     margin: 100px 0 170px 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
 }
 
-.about-me-text {
+.about-me-content {  
+    padding: 40px 60px;
+    max-width: 1200px;
     display: flex;
+}
+
+.about-me-row {
+    font-size: 20px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.about-me-item {
+    display: flex;
+    gap: 20px;
+}
+
+.about-me-icon {
+    height: 62px;
 }
 
 .skills {
@@ -177,6 +205,11 @@ menu a:hover {
     flex-direction: column;
     align-items: center;
     gap: 8px;
+}
+
+.skill-item:hover {
+    color: #fc5b50;
+    cursor: pointer;;
 }
 
 .skills img {
@@ -255,10 +288,6 @@ menu a:hover {
 }
 
 footer {
-    bottom: 0;
-    right: 0;
-    left: 0;
-    position: fixed;
     background-color: #0e3240;
     height: 50px;
     display: flex;
@@ -275,14 +304,35 @@ footer img {
 }
 
 
-@media (max-width: 1200px) {
+@media (max-width: 1300px) {
     .header {
         padding: 0 60px;
+    }
+
+    h1 {
+        font-size: 64px;
+    }
+
+    .name h3 {
+        font-size: 33px;
+    }
+
+    .me-container img {
+        max-height: 650px;
     }
 }
 
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
+
+    h1 {
+        font-size: 54px;
+    }
+
+    .name {
+        align-items: center;
+    }
+
     .header {
         height: 80px;
         padding: 0 24px;
@@ -310,23 +360,25 @@ footer img {
     }
 
     .hero {
-        margin-top: 80px;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        height: 100vh;
+        padding-top: 170px;
+        box-sizing: border-box;
     }
 
     .me-container {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
         justify-content: center;
-        align-items: center;
-        gap: 50px;
-        margin-top: 130px;
     }
 
-    .name {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    .me-container img {
+        max-height: 550px;
+        width: 100%;
+    }
+
+    .me-container-name {
+        justify-content: center;
     }
 
     .portfolio-container {
