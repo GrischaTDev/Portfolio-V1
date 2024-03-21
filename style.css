@@ -7,6 +7,7 @@ body {
     color: white;
     font-family: 'Quicksand', sans-serif;
     background-color: #0e3240;
+    font-size: 18px;
 }
 
 h1 {
@@ -33,13 +34,6 @@ h3 {
     margin: 0;
 }
 
-h4 {
-    font-weight: bold;
-    font-size: 16px;
-    color: white;
-    text-align: center;
-    margin: 0;
-}
 
 .color1 {
     color: #fc5b50;        
@@ -213,8 +207,14 @@ menu a:hover {
     display: flex;
     justify-content: center;
     gap: 58px;
-    margin-top: 40px;
     flex-wrap: wrap;
+    max-width: 700px;
+}
+
+.skills-description {
+    padding: 40px 20px 60px 20px;
+    max-width: 800px;
+    text-align: center;
 }
 
 .skill-item {
@@ -222,14 +222,27 @@ menu a:hover {
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    user-select: none;
+    transition: color 0.5s;
+}
+
+.skill-item svg path{
+    fill: white;
+    transition: fill 0.5s;
 }
 
 .skill-item:hover {
     color: #fc5b50;
-    cursor: pointer;;
 }
 
-.skills img {
+.skill-item:hover svg path{
+    fill: #fc5b50;
+}
+
+.skills svg {
     height: 68px;
 }
 
@@ -318,24 +331,32 @@ menu a:hover {
 }
 
 .contact-item {
+    text-decoration: none;
+    color: #0e3240;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 20px;
     width: 290px;
-    height: 250px;
+    height: 200px;
     cursor: pointer;
     background-color: #ffffffcc;
     border-radius: 16px;
     box-shadow: 0 6px 35px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.5s;
 }
 
 .contact-item:hover {
+    color: white;
     background-color: #fc5b50;
 }
 
-.contact-item img {
+.contact-item:hover svg path {
+    fill: #ffffff !important;
+}
+
+.contact-item svg {
     height: 60px;
 }
 
@@ -353,6 +374,12 @@ footer {
 footer img {
     padding-left: 10px;
     height: 34px;
+}
+
+@media (min-height: 1200px) {
+    .me-container img {
+        max-height: 1000px;
+    }
 }
 
 
@@ -438,5 +465,15 @@ footer img {
         justify-content: center;
         flex-direction: column;
         gap: 20px;
+    }
+
+    .contact-content {
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    .row-size-contact {
+        height: unset;
+        padding: 60px 0;
     }
 }
