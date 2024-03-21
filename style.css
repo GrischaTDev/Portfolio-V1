@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
     color: white;
@@ -41,12 +45,31 @@ h4 {
     color: #fc5b50;        
 }
 
-.color2 {
+.color-dark-blue {
     color: #0e3240;
 }
 
+.row-size {  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 140px 0 60px 0;
+}
+
+.row-size-contact {  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    height: 600px;
+    background-position: inherit;
+    background-size: cover;
+}
+
 .header {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     left: 0;
@@ -56,6 +79,8 @@ h4 {
     align-items: center;
     padding: 0 120px;
     background-color: #0e3240;
+    border-bottom: 1px solid white;
+    z-index: 100;
 }
 
 .header-logo {
@@ -87,7 +112,7 @@ menu a:hover {
     padding: 8px;
 }
 
-.contact-box {
+.contact-sidebar {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -98,12 +123,12 @@ menu a:hover {
     background-color: #0e3240;
 }
 
-.contact-box a {
+.contact-sidebar a {
     height: 46px;
     width: 46px;
 }
 
-.contact-box img {
+.contact-sidebar img {
     height: 30px;
     width: 30px;
     padding: 8px;
@@ -112,7 +137,7 @@ menu a:hover {
     transition: 0.5s;
 }
 
-.contact-box img:hover {
+.contact-sidebar img:hover {
     background-color: #fc5b50;
     border-radius: 4px;
     border-radius: 8px 0 0 8px;
@@ -161,14 +186,6 @@ menu a:hover {
     font-size: 38px;
 }
 
-.about-me {  
-    margin: 100px 0 170px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 .about-me-content {  
     padding: 40px 60px;
     max-width: 1200px;
@@ -190,10 +207,6 @@ menu a:hover {
 
 .about-me-icon {
     height: 62px;
-}
-
-.skills-container {
-    margin: 100px 0 170px 0;
 }
 
 .skills {
@@ -299,20 +312,27 @@ menu a:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
     gap: 100px;
     font-size: 20px;
     font-weight: bold;
-    margin-top: 40px;
 }
 
 .contact-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 20px;
-    width: 300px;
+    width: 290px;
+    height: 250px;
     cursor: pointer;
+    background-color: #ffffffcc;
+    border-radius: 16px;
+    box-shadow: 0 6px 35px rgba(0, 0, 0, 0.2);
+}
+
+.contact-item:hover {
+    background-color: #fc5b50;
 }
 
 .contact-item img {
@@ -383,7 +403,7 @@ footer img {
         display: none;
     }
 
-    .contact-box {
+    .contact-sidebar {
         display: flex;
         flex-direction: column;
         align-items: center;
