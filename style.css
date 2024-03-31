@@ -262,6 +262,7 @@ menu a:hover {
 
 .portfolio-info span {
     font-size: 20px;
+    text-align: center;
 }
 
 .portfolio-info a {
@@ -305,6 +306,8 @@ menu a:hover {
 
 .portfolio-item img {
     border-radius: 16px;
+    height: 212px;
+    object-fit: cover;
 }
 
 .portfolio-description {
