@@ -8,18 +8,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Economica:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="script.js"></script>
     <title>Portfolio - Grischa Tänzer</title>
 </head>
 <body>
     <div class="header">
         <img class="header-logo" src="./img/logo.svg" alt="Logo">
-        <img class="mobile-menu" src="./img/menu.svg" alt="Mobile menu">
+        <img class="mobile-menu-btn" src="./img/menu.svg" alt="Mobile menu" onclick="openMobileMenu()">
         <menu>
             <a href="#aboute-me">Über mich</a>
             <a href="#skills">Skills</a>
             <a href="#portfolio">Portfolio</a>
             <a href="#contact">Kontakt</a>
         </menu>
+    </div>
+
+    <div id="mobile-menu" class="mobile-menu d-none">
+        <img src="img/close.svg" alt="Close icon" onclick="closeMobileMenu()">
+        <div class="mobile-menu-items">
+            <a href="#aboute-me" onclick="closeMobileMenu()">Über mich</a>
+            <a href="#skills" onclick="closeMobileMenu()">Skills</a>
+            <a href="#portfolio" onclick="closeMobileMenu()">Portfolio</a>
+            <a href="#contact" onclick="closeMobileMenu()">Kontakt</a>
+        </div>
     </div>
 
     <div class="contact-sidebar">
@@ -108,11 +119,11 @@
         <h2>Portfolio</h2>
         <div class="portfolio-liste">
             <div class="portfolio-item">
-                <img src="./img/join.png" alt="Join">
+                <img src="./img/join-portfolio.svg" alt="Join">
                 <div class="portfolio-info">
                     <span>Join</span>
                     <span class="color1">Javascript | CSS | HTML</span>
-                    <span class="portfolio-description">Eine Task-Management-App zur Organisation Ihrer Aufgaben. Erstellen Sie ganz einfach neue Tasks und weisen diese Ihren Kontakten zu.</span>
+                    <span class="portfolio-description">Eine Task-Management-App. Aufgaben mithilfe von Drag-and-Drop-Funktionen erstellen und organisieren, Benutzer und Kategorien zuweisen.</span>
                     <div class="portfolio-btn">
                         <a target="_blank" href="https://join-27.developerakademie.net/">Live Test</a>
                         <a target="_blank" href="https://github.com/GrischaTDev/Join-Kanban.git">GitHub</a>
@@ -120,11 +131,11 @@
                 </div>
             </div>
             <div class="portfolio-item">
-                <img src="./img/pokedex.png" alt="Join">
+                <img src="./img/pokedex-portfolio.svg" alt="Join">
                 <div class="portfolio-info">
                     <span>Pokedex</span>
                     <span class="color1">Javascript | CSS | HTML | Bootstrap</span>
-                    <span class="portfolio-description">Eine einfache Übersicht, die Pokémon-Informationen bereitstellt, basierend auf der PokéAPI.</span>
+                    <span class="portfolio-description">Eine einfache Übersicht, mit unterschiedlichen Kategorien, die Pokémon-Informationen bereitstellt, basierend auf der PokéAPI.</span>
                     <div class="portfolio-btn">
                         <a target="_blank" href="https://grischa-taenzer.developerakademie.net/Projekte/Modul%209/Pokedex/">Live Test</a>
                         <a target="_blank" href="https://github.com/GrischaTDev/Pokedex-DA.git">GitHub</a>
@@ -156,8 +167,8 @@
     </div>
     
     <footer>
-        <span>I learn with</span>
-        <img src="./img/footer_logo.svg" alt="">
+        <a href="./impressum.html">Impressum</a>
+        <div>&copy;2024 Grischa Tänzer</div>
     </footer>
 </body>
 </html>

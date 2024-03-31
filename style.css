@@ -10,6 +10,10 @@ body {
     font-size: 18px;
 }
 
+.d-none {
+    display: none !important;
+}
+
 h1 {
     font-weight: bold;
     font-size: 74px;
@@ -58,7 +62,7 @@ h3 {
     align-items: center;
     gap: 40px;
     height: 600px;
-    background-position: inherit;
+    background-position: top;
     background-size: cover;
 }
 
@@ -81,8 +85,49 @@ h3 {
     height: 60px;
 }
 
-.mobile-menu {
+.mobile-menu-btn {
     display: none;
+}
+
+.mobile-menu {
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    background-color: #ffffffd9;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mobile-menu-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    gap: 30px;
+}
+
+.mobile-menu-items a {
+    font-size: 26px;
+    color: black;
+    text-decoration: none;
+    border-radius: 16px;
+    width: 60%;
+    text-align: center;
+    padding: 12px;
+    border-bottom: 2px solid #fc5b50;
+    border-top: 2px solid #fc5b50;
+}
+
+
+.mobile-menu img {
+    padding: 20px;
+    height: 34px;
+    width: 34px;
+    cursor: pointer;
 }
 
 menu {
@@ -99,11 +144,15 @@ menu a {
     padding: 8px;
     background-color: #fc5b5000;
     transition: 0.5s;
+    border-bottom: 2px solid rgba(255, 255, 255, 0);
+    border-top: 2px solid rgba(255, 255, 255, 0);
 }
 
 menu a:hover {
     background-color: #fc5b50;
     padding: 8px;
+    border-bottom: 2px solid white;
+    border-top: 2px solid white;
 }
 
 .contact-sidebar {
@@ -113,13 +162,14 @@ menu a:hover {
     position: fixed;
     top: 40%;
     right: 0;
-    border-radius: 8px 0 0 8px;
-    background-color: #0e3240;
 }
 
 .contact-sidebar a {
     height: 46px;
     width: 46px;
+    border-radius: 8px 0 0 8px;
+    background-color: #0e3240;
+    border-left: 2px solid #fc5b50;
 }
 
 .contact-sidebar img {
@@ -127,25 +177,62 @@ menu a:hover {
     width: 30px;
     padding: 8px;
     background-color: #fc5b5000;
-    border-radius: 8px 0 0 8px;
+
     transition: 0.5s;
 }
 
 .contact-sidebar img:hover {
     background-color: #fc5b50;
     border-radius: 4px;
-    border-radius: 8px 0 0 8px;
+
 }
 
 
 .hero {
-    background-position: inherit;
+    background-position: right;
     background-size: cover;
     display: flex;
     justify-content: center;
     flex-direction: row;
     align-items: center;
     height: 100vh;
+}
+
+.hero-impressum {
+    background-position: right;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.hero-impressum h1 {
+    color: white;
+    font-size: 36px;
+    font-weight: bold;
+    text-align: unset;
+}
+
+.impressum-h2 {
+    font-weight: bold;
+}
+
+.impressum-text {
+    color: white;
+    font-size: 24px;
+    text-align: center;
+    background-color: #0e3240;
+    border-radius: 16px;
+    padding: 30px;
+    border-bottom: 2px solid #fc5b50;
+    border-top: 2px solid #fc5b50;
+}
+
+.impressum-text a {
+    color: white;
+    text-decoration: none;
 }
 
 .me-container-name {
@@ -184,10 +271,12 @@ menu a:hover {
     padding: 40px 60px;
     max-width: 1200px;
     display: flex;
+    gap: 80px;
 }
 
 .about-me-row {
     font-size: 20px;
+    text-align: justify;
     width: 50%;
     display: flex;
     flex-direction: column;
@@ -215,6 +304,7 @@ menu a:hover {
     padding: 40px 20px 60px 20px;
     max-width: 800px;
     text-align: center;
+    hyphens: auto;
 }
 
 .skill-item {
@@ -227,6 +317,10 @@ menu a:hover {
     color: white;
     user-select: none;
     transition: color 0.5s;
+    padding: 4px 0;
+    border-radius: 8px;
+    border-bottom: 2px solid #fc5b5000;
+    border-top: 2px solid #fc5b5000;
 }
 
 .skill-item svg path{
@@ -236,6 +330,10 @@ menu a:hover {
 
 .skill-item:hover {
     color: #fc5b50;
+    border-bottom: 2px solid #fc5b50;
+    border-top: 2px solid #fc5b50;
+    padding: 4px 0;
+    border-radius: 8px;
 }
 
 .skill-item:hover svg path{
@@ -271,12 +369,16 @@ menu a:hover {
     background-color: #fc5b50;
     margin-top: 10px;
     padding: 10px 20px;
-    border-radius: 3px
+    border-radius: 14px;
+    border-bottom: 2px solid white;
+    border-top: 2px solid white;
 }
 
 .portfolio-info a:hover {
     color: white;
-    background-color: #f79790;
+    /* background-color: #f79790; */
+    border-bottom: 2px solid #fc5b50;
+    border-top: 2px solid #fc5b50;
 }
 
 .portfolio-liste {
@@ -298,6 +400,8 @@ menu a:hover {
     border-radius: 16px;
     box-shadow: 0 6px 35px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(1.9px);
+    border-bottom: 2px solid #fc5b50;
+    border-top: 2px solid #fc5b50;
 }
 
 .portfolio-item:hover {
@@ -348,6 +452,8 @@ menu a:hover {
     border-radius: 16px;
     box-shadow: 0 6px 35px rgba(0, 0, 0, 0.2);
     transition: background-color 0.5s;
+    border-bottom: 2px solid #fc5b50;
+    border-top: 2px solid #fc5b50;
 }
 
 .contact-item:hover {
@@ -367,11 +473,21 @@ footer {
     background-color: #0e3240;
     height: 50px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 0 40px;
     align-items: center;
     font-size: 18px;
     color: white;
     font-weight: bold;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #fc5b50;
 }
 
 footer img {
@@ -424,13 +540,21 @@ footer img {
         height: 40px;
     }
 
-    .mobile-menu {
+    .mobile-menu-btn {
         display: flex;
         height: 35px;
     }
 
     menu {
         display: none;
+    }
+
+    .row-size {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 80px 0 60px 0;
     }
 
     .contact-sidebar {
@@ -463,11 +587,26 @@ footer img {
         justify-content: center;
     }
 
+    .about-me-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
     .portfolio-container {
         display: flex;
         justify-content: center;
         flex-direction: column;
         gap: 20px;
+    }
+
+    .about-me-row {
+        width: unset;
+        hyphens:auto;
+    }
+
+    .about-me-item {
+        flex-direction: column;
+        align-items: center;
     }
 
     .contact-content {
@@ -479,4 +618,17 @@ footer img {
         height: unset;
         padding: 60px 0;
     }
+
+    .impressum-text {
+        font-size: 20px;
+        margin: 20px;
+    }
+
+    .footer-impressum {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
 }
+
