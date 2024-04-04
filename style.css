@@ -502,7 +502,7 @@ footer img {
 }
 
 
-@media (max-width: 1300px) {
+@media (max-width: 1600px) {
     .header {
         padding: 0 60px;
     }
@@ -516,7 +516,7 @@ footer img {
     }
 
     .me-container img {
-        max-height: 650px;
+        max-height: 80%;
     }
 }
 
@@ -579,7 +579,7 @@ footer img {
     }
 
     .me-container img {
-        max-height: 550px;
+        max-height: 90%;
         width: 100%;
     }
 
