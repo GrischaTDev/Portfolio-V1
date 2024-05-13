@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: regions.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: regions.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>let regionAllPokemon;
+let allRegionPokemonData = []; // Alle Pokemon die es in der API gibt!
+let startIndex = 0;
+let endIndex = 20;
+loadMorePokemon = 20;
+nextPokemon = 0;
+////////////////////////////////////////////////
+
+progressBarNone = document.getElementById('progress-bar');
+
+
+/**
+ * Loads important function at the start of the page
+ */
+async function initAllRegionPokemon(currentRegion) {
+    await loadRegion(currentRegion);
+    renderRegionPokemon();
+    startLoadCompleteRegionPokemon();
+    startLoadCompletePokemon();
+    load();
+    renderAllDraggedPokemon();
+}
+
+
+/**
+ * Loads all regions from Pokemon
+ * 
+ * @param {number} currentRegion - Transfers the id for the requested region
+ */
+async function loadRegion(currentRegion) {
+    let regionsUrl = `https://pokeapi.co/api/v2/pokedex/${currentRegion}`;
+    let response = await fetch(regionsUrl);
+    let regionLoaded = await response.json();
+    regionAllPokemon = regionLoaded['pokemon_entries'];
+
+    await loadRegionPokemon();
+}
+
+
+/**
+ * Loads all Pokemon for the region
+ */
+async function loadRegionPokemon() {
+    allRegionPokemonData = [];
+    const promises = [];
+
+    for (let h = startIndex; h &lt; endIndex; h++) { 
+        let pokemonUrl = regionAllPokemon[h]['pokemon_species']['url'];
+        let response = await fetch(pokemonUrl);
+        let currentRegionPokemon = await response.json();
+
+        let regionPokemonId = currentRegionPokemon['id'];
+        promises.push(loadAllPokemonApi(regionPokemonId));
+    }
+    await Promise.all(promises);
+}
+
+
+/**
+ * After the first 20 Pokemon have been rendered, all the remaining Pokemon in the region are loaded
+ */
+function startLoadCompleteRegionPokemon() {
+    endIndex = regionAllPokemon.length;
+    loadRegionPokemon();
+}
+
+
+/**
+ * Loads all required Pokemon data from the Pokemon API for the Pokemon region
+ * 
+ * @param {id} regionPokemonId - Region Pokemon ID
+ */
+async function loadAllPokemonApi(regionPokemonId) {
+    let allPokemonUrl = 'https://pokeapi.co/api/v2/pokemon/' + regionPokemonId;
+    let response2 = await fetch(allPokemonUrl);
+    let currenRegionPokemon = await response2.json();
+    allRegionPokemonData.push({ name: currenRegionPokemon['name'], data: currenRegionPokemon});
+}
+
+
+/**
+ * Renders all Regions Pokemon
+ */
+function renderRegionPokemon() {
+    for (let i = nextPokemon; i &lt; loadMorePokemon; i++) {
+        let number = allRegionPokemonData[i]['data']['id'];
+        let name = allRegionPokemonData[i]['name'];
+        let typesStyle = allRegionPokemonData[i]['data']['types'][0]['type']['name']+'-border';
+
+        document.getElementById('pokedex').innerHTML += singlePokemonTemplateKanto(i, number, name, typesStyle);
+    }
+    stopScroll = false;
+    disableLoadingScreen();
+}
+
+
+/**
+ * Pokemon Card HTML
+ * 
+ * @param {index} i - Pokemon Index
+ * @param {number} number - Pokemon ID
+ * @param {string} name - Pokemon Name
+ * @param {string} typesStyle - Add new Class for Type style
+ */
+function singlePokemonTemplateKanto(i, number, name, typesStyle) {
+    return `
+    &lt;div draggable="true" ondragstart="startDragging(${number-1})" onclick="pokemonPopup(${number-1})" class="pokemon-card ${typesStyle}">
+    &lt;div class="type-card">
+        &lt;div class="types-content">
+            ${typeTemplate(allRegionPokemonData[i])}
+        &lt;/div>
+        &lt;div class="pokemonId">#${i+1}&lt;/div>
+    &lt;/div>
+        &lt;img src="img/pokemon/${number}.png" alt="">
+        &lt;div>${name}&lt;/div>      
+    &lt;/div>
+    `;
+}
+
+/**
+ * Loads the next Pokemon when scrolling down
+ */
+function loadMoreRegion() {
+    let remainingPokemon = allRegionPokemonData.length - loadMorePokemon;
+
+    if (remainingPokemon &lt;= 0) {
+        console.log('Maximale Länge erreicht!');
+        return; 
+    }
+    if (remainingPokemon > 20) {
+        loadMorePokemon += 20;
+        nextPokemon += 20;
+        renderRegionPokemon(); 
+    } else {
+        loadMorePokemon = allRegionPokemonData.length;
+        renderRegionPokemon(); 
+    }
+}
+
+/**
+ * Loads the next Pokemon when scrolling down
+ */
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) { 
+        loadMoreRegion();
+    }
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#changeArrowLeft">changeArrowLeft</a></li><li><a href="global.html#clearCatchedPokemon">clearCatchedPokemon</a></li><li><a href="global.html#closePopup">closePopup</a></li><li><a href="global.html#disableLoadingScreen">disableLoadingScreen</a></li><li><a href="global.html#initAllPokemon">initAllPokemon</a></li><li><a href="global.html#initAllRegionPokemon">initAllRegionPokemon</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadAbout">loadAbout</a></li><li><a href="global.html#loadAllPokemonApi">loadAllPokemonApi</a></li><li><a href="global.html#loadBaseStats">loadBaseStats</a></li><li><a href="global.html#loadCompletePokemon">loadCompletePokemon</a></li><li><a href="global.html#loadMore">loadMore</a></li><li><a href="global.html#loadMoreRegion">loadMoreRegion</a></li><li><a href="global.html#loadRegion">loadRegion</a></li><li><a href="global.html#loadRegionPokemon">loadRegionPokemon</a></li><li><a href="global.html#moveTo">moveTo</a></li><li><a href="global.html#notClose">notClose</a></li><li><a href="global.html#openPopup">openPopup</a></li><li><a href="global.html#pokemonPopup">pokemonPopup</a></li><li><a href="global.html#renderAllDraggedPokemon">renderAllDraggedPokemon</a></li><li><a href="global.html#renderAllPokemon">renderAllPokemon</a></li><li><a href="global.html#renderRegionPokemon">renderRegionPokemon</a></li><li><a href="global.html#renderSearchPokemon">renderSearchPokemon</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#searchPokemon">searchPokemon</a></li><li><a href="global.html#singlePokemonTemplate">singlePokemonTemplate</a></li><li><a href="global.html#singlePokemonTemplateDragged">singlePokemonTemplateDragged</a></li><li><a href="global.html#singlePokemonTemplateKanto">singlePokemonTemplateKanto</a></li><li><a href="global.html#startDragging">startDragging</a></li><li><a href="global.html#startLoadCompletePokemon">startLoadCompletePokemon</a></li><li><a href="global.html#startLoadCompleteRegionPokemon">startLoadCompleteRegionPokemon</a></li><li><a href="global.html#typeTemplate">typeTemplate</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Apr 01 2024 21:05:29 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

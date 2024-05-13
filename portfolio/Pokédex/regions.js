@@ -1,64 +1,115 @@
-let allRegions; // Alle Regionen aus Pokemon.
+let regionAllPokemon;
+let allRegionPokemonData = []; // Alle Pokemon die es in der API gibt!
+let startIndex = 0;
+let endIndex = 20;
+loadMorePokemon = 20;
+nextPokemon = 0;
 ////////////////////////////////////////////////
-let regionKanto; // Region Kanto.
-let currentKantoPokemon;
-let currentKantoPokemonId;
-let currentPokemonIdKanto = 0;
-let headerTitel;
-////////////////////////////////////////////////
+
+progressBarNone = document.getElementById('progress-bar');
 
 
-async function loadRegions() {
-    let url = 'https://pokeapi.co/api/v2/pokedex/?offset=0&limit=32';
-    let response = await fetch(url);
-    allRegions = await response.json();
-    allRegions = allRegions['results'];
+/**
+ * Loads important function at the start of the page
+ */
+async function initAllRegionPokemon(currentRegion) {
+    await loadRegion(currentRegion);
+    renderRegionPokemon();
+    startLoadCompleteRegionPokemon();
+    startLoadCompletePokemon();
+    load();
+    renderAllDraggedPokemon();
 }
 
-function renderRegion(test, name) {
-    headerTitel = name;
-    loadRegionKanto(test)
+
+/**
+ * Loads all regions from Pokemon
+ * 
+ * @param {number} currentRegion - Transfers the id for the requested region
+ */
+async function loadRegion(currentRegion) {
+    let regionsUrl = `https://pokeapi.co/api/v2/pokedex/${currentRegion}`;
+    let response = await fetch(regionsUrl);
+    let regionLoaded = await response.json();
+    regionAllPokemon = regionLoaded['pokemon_entries'];
+
+    await loadRegionPokemon();
 }
 
-async function loadRegionKanto(test) {
-    let kantoUrl = allRegions[test]['url'];
-    let response = await fetch(kantoUrl);
-    regionKanto = await response.json();
-    renderKantoPokemon()
-}
 
-async function renderKantoPokemon() {
-    let kantoPokemons = regionKanto['pokemon_entries']
-    document.getElementById('pokedex').innerHTML = '';
+/**
+ * Loads all Pokemon for the region
+ */
+async function loadRegionPokemon() {
+    allRegionPokemonData = [];
+    const promises = [];
 
-    changeHeaderTitle();
+    for (let h = startIndex; h < endIndex; h++) { 
+        let pokemonUrl = regionAllPokemon[h]['pokemon_species']['url'];
+        let response = await fetch(pokemonUrl);
+        let currentRegionPokemon = await response.json();
 
-    for (let i = 0; i < kantoPokemons.length; i++) {
-        let kantoPokemonUrl = kantoPokemons[i]['pokemon_species']['url'];
-        let response = await fetch(kantoPokemonUrl);
-        currentKantoPokemonId = await response.json();
-        let kantoId = currentKantoPokemonId['id'];
-        // Hier wird die Normale Pokemon API mit der ID der Pokemon aus dem Kanto Pokedex geladen.
-        await loadAllPokemonApi(kantoId);
-
-        let number = currentKantoPokemon['id'];
-        let arrayNumber = currentKantoPokemon['id']-1;
-        let name = currentKantoPokemon['name'];
-        let listNumber = i+1;
-
-        document.getElementById('pokedex').innerHTML += singlePokemonTemplateKanto(number, name, arrayNumber, listNumber);
+        let regionPokemonId = currentRegionPokemon['id'];
+        promises.push(loadAllPokemonApi(regionPokemonId));
     }
-    console.log(headerTitel, 'Pokedex geladen!');
+    await Promise.all(promises);
 }
 
-function singlePokemonTemplateKanto(number, name, arrayNumber, listNumber) {
+
+/**
+ * After the first 20 Pokemon have been rendered, all the remaining Pokemon in the region are loaded
+ */
+function startLoadCompleteRegionPokemon() {
+    endIndex = regionAllPokemon.length;
+    loadRegionPokemon();
+}
+
+
+/**
+ * Loads all required Pokemon data from the Pokemon API for the Pokemon region
+ * 
+ * @param {id} regionPokemonId - Region Pokemon ID
+ */
+async function loadAllPokemonApi(regionPokemonId) {
+    let allPokemonUrl = 'https://pokeapi.co/api/v2/pokemon/' + regionPokemonId;
+    let response2 = await fetch(allPokemonUrl);
+    let currenRegionPokemon = await response2.json();
+    allRegionPokemonData.push({ name: currenRegionPokemon['name'], data: currenRegionPokemon});
+}
+
+
+/**
+ * Renders all Regions Pokemon
+ */
+function renderRegionPokemon() {
+    for (let i = nextPokemon; i < loadMorePokemon; i++) {
+        let number = allRegionPokemonData[i]['data']['id'];
+        let name = allRegionPokemonData[i]['name'];
+        let typesStyle = allRegionPokemonData[i]['data']['types'][0]['type']['name']+'-border';
+
+        document.getElementById('pokedex').innerHTML += singlePokemonTemplateKanto(i, number, name, typesStyle);
+    }
+    stopScroll = false;
+    disableLoadingScreen();
+}
+
+
+/**
+ * Pokemon Card HTML
+ * 
+ * @param {index} i - Pokemon Index
+ * @param {number} number - Pokemon ID
+ * @param {string} name - Pokemon Name
+ * @param {string} typesStyle - Add new Class for Type style
+ */
+function singlePokemonTemplateKanto(i, number, name, typesStyle) {
     return `
-    <div onclick="pokemonPopup(${arrayNumber})" class="pokemon-card">
+    <div draggable="true" ondragstart="startDragging(${number-1})" onclick="pokemonPopup(${number-1})" class="pokemon-card ${typesStyle}">
     <div class="type-card">
         <div class="types-content">
-            ${typeTemplate(currentKantoPokemon)}
+            ${typeTemplate(allRegionPokemonData[i])}
         </div>
-        <div class="pokemonId">#${listNumber}</div>
+        <div class="pokemonId">#${i+1}</div>
     </div>
         <img src="img/pokemon/${number}.png" alt="">
         <div>${name}</div>      
@@ -66,17 +117,31 @@ function singlePokemonTemplateKanto(number, name, arrayNumber, listNumber) {
     `;
 }
 
-async function loadAllPokemonApi(kantoId) {
-    let pokemonUrl = 'https://pokeapi.co/api/v2/pokemon/' + kantoId;
-    let response2 = await fetch(pokemonUrl);
-    currentKantoPokemon = await response2.json();
-    return currentKantoPokemon;
+/**
+ * Loads the next Pokemon when scrolling down
+ */
+function loadMoreRegion() {
+    let remainingPokemon = allRegionPokemonData.length - loadMorePokemon;
+
+    if (remainingPokemon <= 0) {
+        console.log('Maximale Länge erreicht!');
+        return; 
+    }
+    if (remainingPokemon > 20) {
+        loadMorePokemon += 20;
+        nextPokemon += 20;
+        renderRegionPokemon(); 
+    } else {
+        loadMorePokemon = allRegionPokemonData.length;
+        renderRegionPokemon(); 
+    }
 }
 
-
-function changeHeaderTitle() {
-    let header = document.getElementById('header-img');
-    header.innerHTML = /* html */ `
-    <div>${headerTitel}</div>
-    `;
-}
+/**
+ * Loads the next Pokemon when scrolling down
+ */
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) { 
+        loadMoreRegion();
+    }
+});

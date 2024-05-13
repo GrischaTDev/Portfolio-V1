@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: script.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: script.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>let completePokemon;
+let allPokemonData = []; // Alle Pokemon die es in der API gibt!
+let allCatchedPokemon = [];
+let loadMorePokemon = 20;
+let nextPokemon = 0;
+let stopScroll = false;
+let limit = 20;
+let currentDraggedPokemon;
+let progressBarNone = document.getElementById('progress-bar');
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * Loads important function at the start of the page
+ */
+async function initAllPokemon() {
+    await loadCompletePokemon();
+    renderAllPokemon();
+    startLoadCompletePokemon();
+    load();
+    renderAllDraggedPokemon();
+}
+
+
+/**
+ * Loads all existing Pokemon up to a maximum of 1000
+ */
+async function loadCompletePokemon() {
+    let url = `https://pokeapi.co/api/v2/pokemon?offset=0&amp;limit=${limit}`;
+    let response = await fetch(url);
+    completePokemon = await response.json();
+    completePokemon = completePokemon['results'];
+    allPokemonData = [];
+
+    const progressBar = document.querySelector('.progress-bar');
+
+    for (i = 0; i &lt; completePokemon.length; i++) {
+        let pokemonUrl = completePokemon[i]['url'];
+        let response = await fetch(pokemonUrl);
+        let currentAllPokemon = await response.json();
+
+        allPokemonData.push({ name: currentAllPokemon['name'], data: currentAllPokemon });
+
+        const progressPercentage = Math.round((i + 1) / completePokemon.length * 100);
+        progressBar.style.width = `${progressPercentage}%`;
+        progressBar.innerText = `${progressPercentage}%`; // Show percentage text
+    }
+    progressBarNone.classList.add('d-none');
+    console.log('Alle Pokemon daten', allPokemonData);
+}
+
+
+/**
+ * Changes the limit on how many Pokemon can be loaded to 1000
+ */
+function startLoadCompletePokemon() {
+    limit = 1000;
+    progressBarNone.classList.remove('d-none');
+    loadCompletePokemon(progressBarNone);
+}
+
+
+/**
+ * Renders all Pokemon
+ */
+function renderAllPokemon() {
+    for (k = nextPokemon; k &lt; loadMorePokemon; k++) {
+        let number = allPokemonData[k]['data']['id'];
+        let name = allPokemonData[k]['name'];
+        let typesStyle = allPokemonData[k]['data']['types'][0]['type']['name']+'-border';
+
+        document.getElementById('pokedex').innerHTML += singlePokemonTemplate(k, number, name, typesStyle);
+    }
+    stopScroll = false;
+    disableLoadingScreen();
+}
+
+
+/**
+ * Pokemon Card HTML
+ * 
+ * @param {index} i - Pokemon Index
+ * @param {number} number - Pokemon ID
+ * @param {string} name - Pokemon Name
+ * @param {string} typesStyle - Add new Class for Type style
+ */
+function singlePokemonTemplate(i, number, name, typesStyle) {
+    return `
+    &lt;div draggable="true" ondragstart="startDragging(${i})" onclick="pokemonPopup(${i})" class="pokemon-card ${typesStyle}">
+    &lt;div class="type-card">
+        &lt;div class="types-content">
+            ${typeTemplate(allPokemonData[i])}
+        &lt;/div>
+        &lt;div class="pokemonId">#${number}&lt;/div>
+    &lt;/div>
+        &lt;img src="img/pokemon/${number}.png" alt="">
+        &lt;div>${name}&lt;/div>      
+    &lt;/div>
+    `;
+}
+
+
+/**
+ * Renders all types of a Pokemon
+ * 
+ * @param {data} allPokemonData - All Pokemon data
+ */
+function typeTemplate(allPokemonData) {
+    const types = allPokemonData['data']['types'];
+    let htmlText = "";
+    for (let j = 0; j &lt; types.length; j++) {
+        htmlText += `
+        &lt;div class="${types[j]['type']['name']}">
+            &lt;div>${types[j]['type']['name']}&lt;/div>
+        &lt;/div>
+        `;
+    }
+    return htmlText;
+}
+
+
+/**
+ * Opens the Pokemon Card in a new pop-up window
+ * 
+ * @param {index} i - Pokemon index
+ */
+async function pokemonPopup(i) {
+    if (i == -1) {
+        return;
+    }
+
+    let number = allPokemonData[i]['data']['id'];
+    let name = allPokemonData[i]['name'];
+
+    document.getElementById('pokemon-stats').innerHTML = `
+    &lt;div class="pokemon-popup" onclick="closePopup()">
+        &lt;div class="closeMobile" onclick="closePopup()">Close&lt;/div>
+        &lt;div id="pokemon-popup-card${i}" class="pokemon-popup-card" onclick="notClose(event)">  
+        &lt;div class="type-card">
+                &lt;div class="types-content">
+                    ${typeTemplate(allPokemonData[i])}
+                &lt;/div>
+                &lt;div class="pokemonId">#${number}&lt;/div>   
+            &lt;/div>
+            &lt;div>${name}&lt;/div>     
+            &lt;img src="img/pokemon/${number}.png" alt="">
+            &lt;div class="pokemon-info-card">
+                &lt;menu>
+                    &lt;div class="pokemon-left" onclick="pokemonPopup(${i -1})">&lt;img id="arrowLeft" src="./img/navigate-left.svg">&lt;/div>
+                    &lt;div class="menu">
+                        &lt;div class="menu-start" href="" onclick="loadBaseStats(${i})">Base Stats&lt;/div>
+                        &lt;div class="menu-end" href="" id="test" onclick="loadAbout(${i})">About&lt;/div>
+                    &lt;/div>
+                    &lt;div class="pokemon-right" onclick="pokemonPopup(${i +1})">&lt;img src="./img/navigate.svg">&lt;/div>
+                &lt;/menu>
+                &lt;div id="about">&lt;/div>
+            &lt;/div>
+        &lt;/div>
+    &lt;/div>
+    `;
+
+    openPopup();
+    changeArrowLeft(number); 
+    loadBaseStats(i);
+}
+
+
+/**
+ * Loads the Pokemon About me data
+ * 
+ * @param {index} i - Pokemon Index
+ */
+function loadAbout(i) {
+    let species = allPokemonData[i]['data']['species']['name'];
+    let height = allPokemonData[i]['data']['height'];
+    let weight = allPokemonData[i]['data']['weight'];
+
+    document.getElementById('about').innerHTML = /* html */`
+
+    &lt;div id="about-info">
+        &lt;div class="about-row">
+            &lt;div class="about-left">Species&lt;/div>&lt;div class="about-right">${species}&lt;/div>
+        &lt;/div>
+        &lt;div class="about-row">
+            &lt;div class="about-left">Height&lt;/div>&lt;div class="about-right">${height}&lt;/div>
+        &lt;/div>
+        &lt;div class="about-row">
+            &lt;div class="about-left">Weight&lt;/div>&lt;div class="about-right">${weight}&lt;/div>
+        &lt;/div>  
+    &lt;/div>
+    `;
+}
+
+
+/**
+ * Loads the Pokemon base stats
+ * 
+ * @param {index} i - Pokemon Index
+ */
+function loadBaseStats(i) {
+    let baseStats = allPokemonData[i]['data']['stats'];
+    document.getElementById('about').innerHTML = '';
+
+    for (s = 0; s &lt; baseStats.length; s++) {
+        const baseStatName = baseStats[s]['stat']['name'];
+        const baseStatValue = baseStats[s]['base_stat'];
+
+        document.getElementById('about').innerHTML += /* html */`
+        &lt;div class="base-stats-row">
+            &lt;div class="base-stats-left">${baseStatName}&lt;/div>
+            &lt;div>${baseStatValue}&lt;/div>
+            &lt;div class="progress base-stats-right" role="progressbar" aria-label="Basic example" aria-valuenow="${baseStatValue}" aria-valuemin="0" aria-valuemax="100">
+                &lt;div class="progress-bar" style="width: ${baseStatValue}%">&lt;/div>
+            &lt;/div>
+        &lt;/div>
+        `;
+    }
+}
+
+
+/**
+ * Hides the left button on the first Pokemon
+ * 
+ * @param {index} i - Pokemon Index 
+ */
+function changeArrowLeft(i) {
+    let pokemonArrowSrc = document.getElementById('arrowLeft');
+    if (i == 1) {
+        pokemonArrowSrc.src = './img/navigate-left-end.svg';
+    }
+}
+
+
+/**
+ * Starts the search function and opens the results field
+ */
+async function searchPokemon() {
+    let search = document.getElementById('inputSearch').value.toLowerCase();
+    let renderPokemonList = document.getElementById('search-results');
+    renderPokemonList.innerHTML = '';
+    
+    if (search === '') {
+        renderPokemonList.innerHTML = '';
+        renderPokemonList.classList.add('d-none');
+        return;
+    }; 
+    renderPokemonList.classList.remove('d-none');
+    renderSearchPokemon(search, renderPokemonList);
+}
+
+
+/**
+ * Renders the pokemon you are looking for
+ * 
+ * @param {value} search - Inputfield value
+ * @param {id} renderPokemonList - Render results field
+ */
+async function renderSearchPokemon(search, renderPokemonList) {
+    for (let i = 0; i &lt; allPokemonData.length; i++) {
+
+        const number = allPokemonData[i]['data']['id'];
+        const name = allPokemonData[i]['name'];
+
+        if (name.toLowerCase().includes(search)) {
+
+            renderPokemonList.innerHTML += /* html */ `
+            &lt;div draggable="true" ondragstart="startDragging(${i})" onclick="pokemonPopup(${i})" class="pokemon-card">
+            &lt;div class="type-card">
+                &lt;div class="types-content">
+                    ${typeTemplate(allPokemonData[i])}
+                &lt;/div>
+                &lt;div class="pokemonId">#${number}&lt;/div>
+            &lt;/div>
+                &lt;img src="img/pokemon/${number}.png" alt="">
+                &lt;div>${name}&lt;/div>      
+            &lt;/div>
+            `;
+        }
+    }
+}
+
+
+/**
+ * Deactivates the loading screen
+ */
+function disableLoadingScreen() {
+    document.getElementById('loadingScreen').classList.add('d-none');
+    document.getElementById('body').classList.remove('hide-scrollbar');
+}
+
+
+/**
+ * Opens the Pokemon pop-up
+ */
+function openPopup() {
+    document.getElementById('pokemon-stats').classList.remove('d-none');
+    document.getElementById('body').classList.add('hide-scrollbar');
+}
+
+
+/**
+ * Closes the Pokemon popup
+ */
+function closePopup() {
+    document.getElementById('pokemon-stats').classList.add('d-none');
+    document.getElementById('body').classList.remove('hide-scrollbar');
+}
+
+
+/**
+ * prevents the Pokemon popup from closing when clicking on the content
+ * 
+ * @param {event} event 
+ */
+function notClose(event) {
+    event.stopPropagation();
+}
+
+/**
+ * Loads the next Pokemon when scrolling down
+ */
+function loadMore() {
+    let remainingPokemon = allPokemonData.length - loadMorePokemon;
+
+    if (remainingPokemon &lt;= 0) {
+        console.log('Maximale Länge erreicht!');
+        return; 
+    }
+    if (remainingPokemon > 20) {
+        loadMorePokemon += 20;
+        nextPokemon += 20;
+        renderAllPokemon(); 
+    } else {
+        loadMorePokemon = allPokemonData.length;
+        renderAllPokemon(); 
+    }
+}
+
+
+/**
+ * Loads the next Pokemon when scrolling down
+ */
+window.addEventListener('scroll', () => {
+    if (document.getElementById('load-more-function')) { 
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) { 
+            loadMore();
+            console.log('geht nicht')
+        }
+    }
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#changeArrowLeft">changeArrowLeft</a></li><li><a href="global.html#clearCatchedPokemon">clearCatchedPokemon</a></li><li><a href="global.html#closePopup">closePopup</a></li><li><a href="global.html#disableLoadingScreen">disableLoadingScreen</a></li><li><a href="global.html#initAllPokemon">initAllPokemon</a></li><li><a href="global.html#initAllRegionPokemon">initAllRegionPokemon</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadAbout">loadAbout</a></li><li><a href="global.html#loadAllPokemonApi">loadAllPokemonApi</a></li><li><a href="global.html#loadBaseStats">loadBaseStats</a></li><li><a href="global.html#loadCompletePokemon">loadCompletePokemon</a></li><li><a href="global.html#loadMore">loadMore</a></li><li><a href="global.html#loadMoreRegion">loadMoreRegion</a></li><li><a href="global.html#loadRegion">loadRegion</a></li><li><a href="global.html#loadRegionPokemon">loadRegionPokemon</a></li><li><a href="global.html#moveTo">moveTo</a></li><li><a href="global.html#notClose">notClose</a></li><li><a href="global.html#openPopup">openPopup</a></li><li><a href="global.html#pokemonPopup">pokemonPopup</a></li><li><a href="global.html#renderAllDraggedPokemon">renderAllDraggedPokemon</a></li><li><a href="global.html#renderAllPokemon">renderAllPokemon</a></li><li><a href="global.html#renderRegionPokemon">renderRegionPokemon</a></li><li><a href="global.html#renderSearchPokemon">renderSearchPokemon</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#searchPokemon">searchPokemon</a></li><li><a href="global.html#singlePokemonTemplate">singlePokemonTemplate</a></li><li><a href="global.html#singlePokemonTemplateDragged">singlePokemonTemplateDragged</a></li><li><a href="global.html#singlePokemonTemplateKanto">singlePokemonTemplateKanto</a></li><li><a href="global.html#startDragging">startDragging</a></li><li><a href="global.html#startLoadCompletePokemon">startLoadCompletePokemon</a></li><li><a href="global.html#startLoadCompleteRegionPokemon">startLoadCompleteRegionPokemon</a></li><li><a href="global.html#typeTemplate">typeTemplate</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Apr 01 2024 21:05:29 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
